@@ -137,7 +137,8 @@ return (
                         {picture.length == 1 ? (
                         null
                         ) : (
-                        <Icon icon="charm:cross" width="50" height="50" />
+                            // "majesticons:delete-bin"
+                        <Icon icon="majesticons:delete-bin" width="30" height="30" />
                         )}  
                     </div>
                     </div>

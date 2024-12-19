@@ -26,7 +26,7 @@ useEffect(() => {
   }else{
     setData(dataNoSearch)
   }
-}, [search])
+}, [search, stateManu])
 
   return (
     <>
