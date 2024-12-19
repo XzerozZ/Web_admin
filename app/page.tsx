@@ -5,6 +5,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import logo from '../public/asset/logo.png';
 import { Icon } from '@iconify-icon/react';
+import Link from 'next/link';
 
 export default function Home() {
 
@@ -44,7 +45,9 @@ const [password, setPassword] = useState('');
             placeholder="password"
             className="w-full max-w-96 px-2 pl-10 rounded-md h-10 text shadow-md outline-none text-normalText"/>
           </div>
-          <button className={email && password ?"w-full max-w-96 h-12 bg-primary text-neutral rounded-md text shadow-md hover:opacity-90 active:scale-95 duration-100":"w-full max-w-96 h-12 bg-label text-neutral rounded-md text shadow-md"}>เข้าสู่ระบบ</button>
+          <Link 
+          href={email && password ?"/admin":'/'}
+          className={email && password ?"w-full max-w-96 h-12 bg-primary text-neutral rounded-md text shadow-md hover:opacity-90 active:scale-95 duration-100 flex justify-center items-center":"w-full max-w-96 h-12 bg-label text-neutral rounded-md text shadow-md flex justify-center items-center"}>เข้าสู่ระบบ</Link>
         </div>
       </div>
     </>

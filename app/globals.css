@@ -2,15 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
-/* :root {
-  --background: #ffffff;
+:root {
+  --background: #FCFCFC;
   --foreground: #171717;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #FCFCFC;
   }
 }
 
@@ -18,10 +17,33 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
-} */
+}
 
 .ocover{
   object-fit: cover;
+}
+
+
+
+
+.slidenon::-webkit-scrollbar {
+  width: 0px; /* ความกว้างของ scrollbar */
+  height: 0px; /* ความสูงของ scrollbar (สำหรับแนวนอน) */
+}
+
+.slidenon::-webkit-scrollbar-track {
+  background: #00000000; /* สีพื้นหลังของ scrollbar track */
+  border-radius: 20px; /* ทำให้ scrollbar track มีขอบโค้ง */
+}
+
+.slidenon::-webkit-scrollbar-thumb {
+  background-color: #c8d4ff00; /* สีของ scrollbar thumb */
+  border-radius: 10px;
+  border: 2px solid #f1f1f100;
+}
+
+.slidenon::-webkit-scrollbar-thumb:hover {
+  background-color: none; /* เปลี่ยนสี scrollbar thumb เมื่อ hover */
 }
 
 
