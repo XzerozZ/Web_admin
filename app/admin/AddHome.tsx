@@ -131,13 +131,12 @@ return (
                         />
                     </div>
                     <div
-                        className={picture.length == 1 ?"w-14 h-14 flex justify-center items-center shrink-0":"w-14 h-14 flex justify-center items-center text-err shrink-0 cursor-pointer active:scale-95"}
+                        className={picture.length == 1 ?"w-14 h-14 flex justify-center items-center shrink-0":"w-14 h-14 flex justify-center items-center text-unselectMenu hover:text-err shrink-0 cursor-pointer active:scale-95"}
                         onClick={() => removePictureField(index)}
                     >
                         {picture.length == 1 ? (
                         null
                         ) : (
-                            // "majesticons:delete-bin"
                         <Icon icon="majesticons:delete-bin" width="30" height="30" />
                         )}  
                     </div>
@@ -204,7 +203,7 @@ return (
                         <input 
                         onChange={(e) => setInfo({...info, price: parseInt(e.target.value)})}
                         type='number'
-                        placeholder='ราคาเริ่มต้น'
+                        placeholder='ช่วงราคา'
                         className='w-full h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
                     </div>
                     <div className='w-14 h-14 shrink-0'></div>

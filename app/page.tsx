@@ -37,7 +37,7 @@ const [password, setPassword] = useState('');
           </div>
           <div className="relative">
             <div className='absolute h-10 flex items-center justify-center w-10'>
-              <Icon className={password ?' text-primary2':'text-unselectMenu'} icon="material-symbols:password-rounded" width="24" height="24" />
+              <Icon className={password ?' text-primary2':'text-unselectMenu'} icon="mdi:password" width="24" height="24" />
             </div>
             <input
             type='password'
