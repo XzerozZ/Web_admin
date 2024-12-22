@@ -29,8 +29,10 @@ const [title, setTitle] = useState<string>('');
 const [textAreas, setTextAreas] = useState<TextArea[]>([
     { text: '', size: 'Paragraph', bold: false }
 ]);
+const [formattedDate, setFormattedDate] = useState<string>('');
 
 console.log(textAreas)
+
 // ฟังก์ชันจัดการการเปลี่ยนแปลงของ textarea
 const handleChangetextarea = (e: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
     const newTextAreas = [...textAreas];
@@ -43,6 +45,16 @@ const addTextArea = () => {
     setTextAreas([...textAreas, { text: '', size: 'Paragraph', bold: false }]); // เพิ่มอ็อบเจ็กต์ใหม่
 };
 
+
+useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const date = new Date();
+      const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+      const yearInBE = date.getFullYear() + 543;
+      const formatted = `${date.getDate()} ${thaiMonths[date.getMonth()]} ${yearInBE}`;
+      setFormattedDate(formatted);
+    }
+  }, []);
 // useEffect เพื่อปรับขนาดทุกๆ textarea
 useEffect(() => {
     textAreas.forEach((_, index) => {
@@ -74,20 +86,6 @@ const handleSizeChange = (index: number) => {
 
     setTextAreas(newTextAreas); // อัปเดต state
 };
-
-const date = new Date();
-
-// Array of Thai month names
-const thaiMonths = [
-    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-];
-
-// Get the year in Buddhist Era (พ.ศ.) by adding 543 years to the current year
-const yearInBE = date.getFullYear() + 543;
-
-// Format the date in Thai
-const formattedDate = `${date.getDate()} ${thaiMonths[date.getMonth()]} ${yearInBE}`;
 
 
 
