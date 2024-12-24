@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import logo from '../../public/asset/logo.png';
 import { Icon } from '@iconify-icon/react';
@@ -23,6 +23,32 @@ const [search, setSearch] = useState('')
 const [editId, setEditId] = useState('')
 const [stateEA, setStateEA] = useState(false)
 
+
+  const [data, setData] = useState([]); // ข้อมูลที่ดึงมาจาก API
+  const [loading, setLoading] = useState(true); // สถานะโหลดข้อมูล
+  useEffect(() => {
+    // ฟังก์ชันดึงข้อมูล
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/nursinghouses')
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const result = await response.json(); // แปลง JSON เป็น Object
+        setData(result); // เก็บข้อมูลใน state
+        setLoading(false); // หยุดโหลดข้อมูล
+      } catch (err) {
+        setLoading(false);
+      }
+    };
+
+
+    console.log('+++++++++',data);
+    fetchData(); // เรียกฟังก์ชันดึงข้อมูล
+  }, []);
+
+
+console.log('----------',data);
 
 
   return (

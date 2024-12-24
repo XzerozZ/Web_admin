@@ -1,5 +1,5 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import Image from 'next/image';
 import logo from '../../public/asset/logo.png';
 import { Icon } from '@iconify-icon/react';
@@ -13,13 +13,13 @@ interface state {
 
 type InfoType = {
     name: string;
-    city: string;
+    province: string;
     address: string;
     map: string;
     price: number;
-    tel: string;
-    web: string;
-    time: string;
+    phone_number: string;
+    site: string;
+    Date: string;
 };
 
 const AddHome: React.FC<state> = ({editId, setStateEA}) => {
@@ -27,13 +27,13 @@ const AddHome: React.FC<state> = ({editId, setStateEA}) => {
 const [picture, setPicture] = useState<string[]>(['']);
 const [info, setInfo] = useState<InfoType>({
     name: '',
-    city: '',
+    province: '',
     address: '',
     map: '',
     price: 0,
-    tel: '',
-    web: '',
-    time: '',
+    phone_number: '',
+    site: '',
+    Date: '',
 });
 
 const allInfoFilled = Object.values(info).every(value => {
@@ -74,11 +74,54 @@ const isValidUrl = (url: string): boolean => {
     }
   };
 
+
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // ป้องกันการ reload หน้าเว็บ
+    try {
+      const response = await fetch('http://localhost:5000/nursinghouses', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // ประเภทข้อมูล
+        },
+        body: JSON.stringify({
+            // data test
+            "name": info.name,
+            "province": info.province,
+            "address": info.address,
+            "price": info.price,
+            "map": info.map,
+            "phone_number": info.phone_number,
+            "site": info.site,
+            "Date": info.Date,
+        }), // แปลงข้อมูลเป็น JSON
+      });
+
+    //   if (!response.ok) {
+    //     throw new Error('Failed to send data'); // ตรวจสอบ Error จาก Response
+    //   }
+
+    //   const data = await response.json();
+    //   console.log('Success:', data);
+      alert('Data sent successfully!'); // แจ้งเตือนเมื่อสำเร็จ
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to send data'); // แจ้งเตือนเมื่อมีข้อผิดพลาด
+    }
+  };
+
+
+
+
+
+
+
+
 return (
     <>
 
     {editId=='' ? 
-        <div>
+        <form onSubmit={handleSubmit}>
             <div className='w-full h-14 flex items-center justify-between pr-5'>
                 <Icon
                 onClick={() => setStateEA(false)}
@@ -169,7 +212,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center gap-3'>
                         <input
-                            onChange={(e) => setInfo({...info, city: e.target.value})}
+                            onChange={(e) => setInfo({...info, province: e.target.value})}
                             placeholder='จังหวัด'
                             className='w-4/12 h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
                         <input
@@ -216,7 +259,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center'>
                         <input 
-                        onChange={(e) => setInfo({...info, tel: e.target.value})}
+                        onChange={(e) => setInfo({...info, phone_number: e.target.value})}
                         placeholder='เบอร์โทร'
                         className='w-full h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
                     </div>
@@ -230,7 +273,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center'>
                         <input 
-                        onChange={(e) => setInfo({...info, web: e.target.value})}
+                        onChange={(e) => setInfo({...info, site: e.target.value})}
                         placeholder='ลิงค์เว็บไซต์'
                         className='w-full h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
                     </div>
@@ -244,7 +287,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center'>
                         <textarea
-                        onChange={(e) => setInfo({...info, time: e.target.value})}
+                        onChange={(e) => setInfo({...info, Date: e.target.value})}
                         placeholder='เวลาทำการ'
                         className='w-full h-full rounded-lg border-2 border-unselectInput outline-none p-3 text-normalText resize-none slide'/>
                     </div>
@@ -253,12 +296,14 @@ return (
             </div>
             {/* ------------------------------------------------------------------------------- */}
             <div className='w-full flex justify-end mt-5'>
-                <div className={allInfoFilled?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
+                <button 
+                type={allInfoFilled?'submit':'button'}
+                 className={allInfoFilled?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
                 :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white cursor-pointer'} >
                     เพิ่มบ้านพัก
-                </div>
+                </button>
             </div>
-        </div>
+        </form>
     : 
         <div>editId : {editId}</div> 
     }
