@@ -2,7 +2,7 @@ import React, { use } from 'react'
 import { Icon } from '@iconify-icon/react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
+import Port from '../Port';
 
 interface CardProps {
     stateManu: boolean
@@ -86,7 +86,7 @@ useEffect(() => {
   if (stateManu) {
       const fetchData = async () => {
         try {
-          const response = await fetch('http://localhost:5000/nursinghouses') // Home API
+          const response = await fetch(`${Port.BASE_URL}/nursinghouses`) // Home API
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
@@ -105,7 +105,7 @@ useEffect(() => {
   }else{
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/artical') // Article API
+        const response = await fetch(`${Port.BASE_URL}/nursinghouses`) // Article API
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

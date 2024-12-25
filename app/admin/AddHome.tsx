@@ -4,7 +4,7 @@ import Image from 'next/image';
 import logo from '../../public/asset/logo.png';
 import { Icon } from '@iconify-icon/react';
 import { Hourglass } from 'react-loader-spinner'
-
+import Port from '../Port';
 
 interface state {
     editId: number | null,
@@ -83,7 +83,7 @@ const isValidUrl = (url: string): boolean => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:5000/nursinghouses');
+        const response = await fetch(`${Port.BASE_URL}/nursinghouses`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -109,7 +109,7 @@ const isValidUrl = (url: string): boolean => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // ป้องกันการ reload หน้าเว็บ
     try {
-      const response = await fetch('http://localhost:5000/nursinghouses', {
+      const response = await fetch(`${Port.BASE_URL}/nursinghouses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json', // ประเภทข้อมูล

@@ -53,7 +53,7 @@ useEffect(() => {
           <Navbar stateManu={stateManu} search={search} setSearch={setSearch} setEditId={setEditId} stateEA={stateEA} setStateEA={setStateEA}/>
           {stateManu && !stateEA
           ?<div className='w-full h-12 flex items-center ml-5'>
-            <div className='h-12 flex items-center font-bold gap-5'>
+            <div className='h-12 flex items-center gap-5'>
                 <div 
                 onClick={() => setStatusFilter('All')}
                 className={statusFilter == 'All'?' cursor-pointer text-normalText':' cursor-pointer text-unselectMenu'}>All</div>

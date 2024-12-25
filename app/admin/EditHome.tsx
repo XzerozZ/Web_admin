@@ -4,6 +4,7 @@ import Image from 'next/image';
 import logo from '../../public/asset/logo.png';
 import { Icon } from '@iconify-icon/react';
 import { Hourglass } from 'react-loader-spinner'
+import Port from '../Port';
 
 
 interface state {
@@ -86,7 +87,7 @@ const isValidUrl = (url: string): boolean => {
 useEffect(() => {
     if (editId) {
       const fetchData = async () => {
-        const response = await fetch(`http://localhost:5000/nursinghouses/${editId}`);
+        const response = await fetch(`${Port.BASE_URL}/nursinghouses/${editId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -112,7 +113,7 @@ useEffect(() => {
             picture: picture.join(','),
             };
             console.log(body);
-            const response = await fetch(`http://localhost:5000/nursinghouses/${editId}`, {
+            const response = await fetch(`${Port.BASE_URL}/nursinghouses/${editId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
