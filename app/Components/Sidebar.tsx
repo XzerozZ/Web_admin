@@ -15,7 +15,7 @@ const Sidebar: React.FC<state> = ({stateManu, setStateManu, setSearch, setStateE
     return (
         <>
             <div className='w-2/5 max-w-72 h-full'><div className="min-w-52 h-full"></div></div>
-            <div className='w-1/5 max-w-72 h-full fixed top-0 left-0 z-50'>
+            <div className='w-1/5 max-w-72 h-full fixed top-0 left-0 z-40'>
                 <div className="w-full min-w-52 h-full bg-neutral2 flex flex-col items-center">
                     <div className='w-full relative'>
                         <div className="w-full max-w-40 flex items-center justify-center p-10 mx-auto">

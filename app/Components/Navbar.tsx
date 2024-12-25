@@ -10,7 +10,7 @@ interface state {
     stateManu: boolean
     search: string
     setSearch: (search: string) => void
-    setEditId: (id: string) => void
+    setEditId: (id: number | null) => void
     stateEA: boolean
     setStateEA: (state: boolean) => void
 }
@@ -44,7 +44,7 @@ const Navbar: React.FC<state> = ({stateManu, search, setSearch, setEditId, state
             </div>
             <div 
             onClick={() => {
-              setEditId('')
+              setEditId(null)
               setStateEA(true)
             }}
             className='text-primary mr-10 h-10 w-10 items-center justify-center flex cursor-pointer duration-100 hover:scale-125 active:scale-100'>

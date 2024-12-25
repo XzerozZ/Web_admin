@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { use } from 'react'
 import { useState, useEffect, FormEvent } from 'react';
 import Image from 'next/image';
 import logo from '../../public/asset/logo.png';
@@ -16,30 +16,33 @@ interface state {
     setLastData: (data: any) => void
 }
 
-type InfoType = {
+interface NursingHouse {
+    nh_id: number;
     name: string;
     province: string;
     address: string;
-    map: string;
     price: number;
+    map: string;
     phone_number: string;
     site: string;
     Date: string;
-};
+    Status: string;
+  }
 
-const AddHome: React.FC<state> = ({editId, setStateEA, reload, setReload, stateBanner, setStateBanner, setLastData}) => {
+const EditHome: React.FC<state> = ({editId, setStateEA, reload, setReload, stateBanner, setStateBanner, setLastData}) => {
 
-const [HomeId, setHomeId] = useState<number>(0);
 const [picture, setPicture] = useState<string[]>(['']);
-const [info, setInfo] = useState<InfoType>({
+const [info, setInfo] = useState<NursingHouse>({
+    nh_id: 0,
     name: '',
     province: '',
     address: '',
-    map: '',
     price: 0,
+    map: '',
     phone_number: '',
     site: '',
     Date: '',
+    Status: '',
 });
 
 const allInfoFilled = Object.values(info).every(value => {
@@ -80,82 +83,75 @@ const isValidUrl = (url: string): boolean => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/nursinghouses');
+useEffect(() => {
+    if (editId) {
+      const fetchData = async () => {
+        const response = await fetch(`http://localhost:5000/nursinghouses/${editId}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
-        
-        // Extract the nh_id values and find the max nh_id
-        const maxId = Math.max(...result.result.map((item: { nh_id: number }) => item.nh_id));
-        
-        // Set the homeId to the next available ID
-        setHomeId(maxId + 1);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchData();
-  }, []);
-
-
-
-
+        console.log(result);
+        setInfo(result.result);
+        // setPicture(result.result.picture
+        //     .split(',')
+        //     .map((pic: string) => pic.trim())
+        //     .filter((pic: string) => pic !== ''));
+      };
+  
+      fetchData();
+    }
+  }, [editId]);
 
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // ป้องกันการ reload หน้าเว็บ
     try {
-      const response = await fetch('http://localhost:5000/nursinghouses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // ประเภทข้อมูล
-        },
-        body: JSON.stringify({
-            "name": info.name,
-            "province": info.province,
-            "address": info.address,
-            "price": info.price,
-            "map": info.map,
-            "phone_number": info.phone_number,
-            "site": info.site,
-            "Date": info.Date,
-        }), // แปลงข้อมูลเป็น JSON
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json(); // Try to parse error details
-        if (errorData.message && errorData.message.includes('uni_nursing_houses_name')) {
-            console.log('--> Error: duplicate key value violates unique constraint "uni_nursing_houses_name" (SQLSTATE 23505)');
-            setLastData({ error: 'uni_nursing_houses_name' }); // Save error info in state
-            setStateBanner(true);
-            throw new Error(errorData.message); // Re-throw error for logging
-        }else{
-            setLastData({ error: 'something_went_wrong' }); // Save error info in state
-            setStateBanner(true);
-            throw new Error('Network response was not ok'); // Re-throw error for logging
-        }
-      }
-
-      const data = await response.json();
-      console.log('Success:', data);
-      setReload(!reload); // โหลดข้อมูลใหม่
-      setStateEA(false); // ปิดหน้า AddHome
-      setStateBanner(true);
-      setLastData({data:data.result, massage:'Addhome_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
-    } catch (error) {
-      throw new Error( error as string);
-    }
+        const body = {
+            ...info,
+            picture: picture.join(','),
+            };
+            console.log(body);
+            const response = await fetch(`http://localhost:5000/nursinghouses/${editId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+            });
+            if (!response.ok) {
+                const errorData = await response.json(); // Try to parse error details
+                if (errorData.message && errorData.message.includes('uni_nursing_houses_name')) {
+                    console.log('--> Error: duplicate key value violates unique constraint "uni_nursing_houses_name" (SQLSTATE 23505)');
+                    setLastData({ error: 'uni_nursing_houses_name' }); // Save error info in state
+                    setStateBanner(true);
+                    throw new Error(errorData.message); // Re-throw error for logging
+                }else{
+                    setLastData({ error: 'something_went_wrong' }); // Save error info in state
+                    setStateBanner(true);
+                    throw new Error('Network response was not ok'); // Re-throw error for logging
+                }
+              }
+              const data = await response.json();
+              setLastData({data:data.result, massage:'EditHome_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
+              setReload(!reload);
+              setStateEA(false);
+              setStateBanner(true);
+            } catch (err) {
+                console.error(err);
+            }
+    
   };
 
 
 
+const handleToggle = () => {
+    setInfo({...info, Status: info.Status == "Active"?"Inactive":"Active"});
+};
 
 
 
+console.log(info);
 
 
 return (
@@ -166,7 +162,7 @@ return (
                 <Icon
                 onClick={() => setStateEA(false)}
                 className=' cursor-pointer text-normalText' icon="ion:chevron-back" width="40" height="40" />
-                <div className='text-xl font-bold text-normalText'>Home Id : {HomeId}</div>
+                <div className='text-xl font-bold text-normalText'>Home ID : {editId}</div>
             </div>
             <div className=' w-full border-2 border-accent rounded-lg mt-5 pl-5 p-2 pb-8 relative'>
                 <div className='text-xl bg-neutral absolute px-3 left-10 top-[-15px] text-accent'>รูปภาพบ้านพัก</div>
@@ -238,6 +234,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center'>
                         <input 
+                        value={info.name}
                         onChange={(e) => setInfo({...info, name: e.target.value})}
                         placeholder='ชื่อบ้านพักคนชรา'
                         className='w-full h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
@@ -252,10 +249,12 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center gap-3'>
                         <input
+                            value={info.province}
                             onChange={(e) => setInfo({...info, province: e.target.value})}
                             placeholder='จังหวัด'
                             className='w-4/12 h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
                         <input
+                            value={info.address}
                             onChange={(e) => setInfo({...info, address: e.target.value})}
                             placeholder='ที่อยู่'
                             className='w-8/12 h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
@@ -270,6 +269,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center'>
                         <input 
+                        value={info.map}
                         onChange={(e) => setInfo({...info, map: e.target.value})}
                         placeholder='ลิงค์ที่อยู่'
                         className='w-full h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
@@ -284,6 +284,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center gap-3'>
                         <input 
+                        value={info.price}
                         onChange={(e) => setInfo({...info, price: parseInt(e.target.value)})}
                         type='number'
                         placeholder='ช่วงราคา'
@@ -299,6 +300,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center'>
                         <input 
+                        value={info.phone_number}
                         onChange={(e) => setInfo({...info, phone_number: e.target.value})}
                         placeholder='เบอร์โทร'
                         className='w-full h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
@@ -313,6 +315,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center'>
                         <input 
+                        value={info.site}
                         onChange={(e) => setInfo({...info, site: e.target.value})}
                         placeholder='ลิงค์เว็บไซต์'
                         className='w-full h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText'/>
@@ -327,6 +330,7 @@ return (
                     </div>
                     <div className='w-full px-3 flex justify-center items-center'>
                         <textarea
+                        value={info.Date}
                         onChange={(e) => setInfo({...info, Date: e.target.value})}
                         placeholder='เวลาทำการ'
                         className='w-full h-full rounded-lg border-2 border-unselectInput outline-none p-3 text-normalText resize-none slide'/>
@@ -335,12 +339,25 @@ return (
                 </div>
             </div>
             {/* ------------------------------------------------------------------------------- */}
-            <div className='w-full flex justify-end mt-5'>
+            <div className='w-full flex justify-between mt-5'>
+                <div className='w-40 h-12 flex items-center justify-center text-lg font-bold gap-3'>
+                    Active
+                    <div className="checkbox-wrapper-22">
+                    <label className="switch">
+                        <input 
+                        checked={info.Status == "Active"?true:false} 
+                        onChange={handleToggle}
+                        type="checkbox" 
+                        id="checkbox" />
+                        <div className="slider round"></div>
+                    </label>
+                    </div>
+                </div>
                 <button 
                 type={allInfoFilled?'submit':'button'}
                  className={allInfoFilled?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
                 :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white cursor-pointer'} >
-                    เพิ่มบ้านพัก
+                    ยืนยันแก้ไข
                 </button>
             </div>
         </form>
@@ -348,4 +365,4 @@ return (
   )
 }
 
-export default AddHome
+export default EditHome

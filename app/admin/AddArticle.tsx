@@ -7,8 +7,13 @@ import { Hourglass } from 'react-loader-spinner'
 
 
 interface State {
-    editId: string;
+    editId: number | null;
     setStateEA: (state: boolean) => void;
+    reload: boolean;
+    setReload: (state: boolean) => void;
+    stateBanner: boolean
+    setStateBanner: (state: boolean) => void
+    setLastData: (data: any) => void
 }
 
 interface TextArea {
@@ -20,7 +25,7 @@ interface TextArea {
 
 
 
-const AddArticle: React.FC<State> = ({ editId, setStateEA}) => {
+const AddArticle: React.FC<State> = ({ editId, setStateEA, reload, setReload, setLastData}) => {
 
 
 
@@ -105,7 +110,7 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
 
 return (
     <>
-    {editId=='' ? 
+    {editId== null ? 
         <div>
             <div className='w-full h-14 flex items-center justify-between pr-5'>
                 <Icon
