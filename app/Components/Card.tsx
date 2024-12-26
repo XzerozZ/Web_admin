@@ -3,6 +3,8 @@ import { Icon } from '@iconify-icon/react';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Port from '../Port';
+import ClipLoader from "react-spinners/ClipLoader";
+
 
 interface CardProps {
     stateManu: boolean
@@ -83,6 +85,7 @@ useEffect(() => {
 
 
 useEffect(() => {
+  setLoading(true)
   if (stateManu) {
       const fetchData = async () => {
         try {
@@ -110,8 +113,9 @@ useEffect(() => {
           throw new Error('Network response was not ok');
         }
         const result = await response.json(); // แปลง JSON เป็น Object
-        setData(result.result); // เก็บข้อมูลใน state
-        setArticleIds(result); // เก็บข้อมูลใน state
+        const reversedData = result.result.reverse();
+        setData(reversedData); // เก็บข้อมูลใน state
+        setArticleIds(reversedData); // เก็บข้อมูลใน state
         setLoading(false); // หยุดโหลดข้อมูล
       } catch (err) {
         setLoading(false);
@@ -127,7 +131,14 @@ console.log('+++',data)
 
   return (
     <>
-      {data.map((item, index) => (
+    {loading
+    ?<div className='w-full flex justify-center pr-5 '>
+      <ClipLoader
+        className="w-14 h-14"
+        color='#2A4296'
+      />
+      </div>
+    :(data.map((item, index) => (
         <div 
           key={index} 
           onClick={() => {
@@ -150,7 +161,7 @@ console.log('+++',data)
             <Icon icon="mage:edit" width="20" height="20" />
           </div> 
         </div>
-      ))}
+      )))}
     </>
   )
 }
