@@ -5,14 +5,14 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import logo from '../../public/asset/logo.png';
 import { Icon } from '@iconify-icon/react';
-
 import Sidebar from '../Components/Sidebar';
 import Navbar from '../Components/Navbar';
 import Card from '../Components/Card';
+import Banner from '../Components/Banner';
 import AddHome from './AddHome';
 import EditHome from './EditHome';
 import AddArticle from './AddArticle';
-import Banner from '../Components/Banner';
+
 
 export default function Home() {
 
@@ -32,6 +32,25 @@ const [reload, setReload] = useState(false); // สถานะโหลดข�
 const [stateBanner, setStateBanner] = useState(false)
 
 const [statusFilter, setStatusFilter] = useState('All')
+
+const [token, setToken] = useState('')
+
+
+useEffect(() => {
+  const token = localStorage.getItem('token');
+  const username = localStorage.getItem('username');
+  const login = localStorage.getItem('login');
+  if(login){
+    setToken(token)
+    setLastData({ massage: 'Login_success' });
+    setStateBanner(true);
+    localStorage.removeItem('login');
+  }else if(token == undefined){
+    window.location.href = '/';
+  }
+  
+}, []);
+
 useEffect(() => {
   stateBanner
   ?setTimeout(() => {
@@ -48,11 +67,11 @@ useEffect(() => {
         <div className={stateBanner?'fixed z-50 w-screen flex justify-center top-10 duration-500':'fixed z-50 w-screen flex justify-center top-[-100px] opacity-0 duration-500'}>
           <Banner lastData={lastData}/>
         </div>
-        <Sidebar stateManu={stateManu} setStateManu={setStateManu} setSearch={setSearch} setStateEA={setStateEA}/>
-        <div className='w-full h-full ml-5'>
+        <Sidebar stateManu={stateManu} setStateManu={setStateManu} setSearch={setSearch} setStateEA={setStateEA} token={token} setToken={setToken}/>
+        <div className='w-full h-full pl-5'>
           <Navbar stateManu={stateManu} search={search} setSearch={setSearch} setEditId={setEditId} stateEA={stateEA} setStateEA={setStateEA}/>
           {stateManu && !stateEA
-          ?<div className='w-full h-12 flex items-center ml-5'>
+          ?<div className='w-full h-12 flex items-center pl-5'>
             <div className='h-12 flex items-center gap-5'>
                 <div 
                 onClick={() => setStatusFilter('All')}

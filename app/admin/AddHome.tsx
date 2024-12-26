@@ -30,7 +30,9 @@ type InfoType = {
 const AddHome: React.FC<state> = ({editId, setStateEA, reload, setReload, stateBanner, setStateBanner, setLastData}) => {
 
 const [HomeId, setHomeId] = useState<number>(0);
-const [picture, setPicture] = useState<string[]>(['']);
+const [numPic, setNumPic] = useState(0);
+const [pictures, setPictures] = useState<string[]>([]);
+const [showPictures, setShowPictures] = useState<any[]>([]);
 const [info, setInfo] = useState<InfoType>({
     name: '',
     province: '',
@@ -41,6 +43,7 @@ const [info, setInfo] = useState<InfoType>({
     site: '',
     Date: '',
 });
+const [loading, setLoading] = useState(false)
 
 const allInfoFilled = Object.values(info).every(value => {
     // If it's a number (like price), check if it's non-zero
@@ -48,52 +51,55 @@ const allInfoFilled = Object.values(info).every(value => {
       return value !== 0;
     }
     return value !== ''; // Check if the value is not an empty string
-  }) && picture.every(pic => pic.trim() !== ''); // Ensure all pictures are filled
+  }) && numPic > 0; // Ensure all pictures are filled
   
 
-const addPictureField = () => {
-    if (picture.length < 5) {
-      setPicture([...picture, ""]); // Add an empty string if under the limit
+
+
+// Handle image upload
+const handleUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        setLoading(true);
+        setNumPic((prev) => prev + 1);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const newPicture = [...pictures];
+            const newShowPicture = [...showPictures];
+            newPicture.push(file);
+            newShowPicture.push(reader.result);
+            setPictures(newPicture);
+            setShowPictures(newShowPicture);
+            setLoading(false);
+        };
+        reader.readAsDataURL(file);
     }
 };
 
-const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const newPictures = [...picture];
-    newPictures[index] = e.target.value; // Update the specific input field value
-    setPicture(newPictures);
+const removePictureField = (index) => {
+    const updatedPictures = pictures.filter((_, i) => i !== index);
+    const updatedShowPictures = showPictures.filter((_, i) => i !== index);
+    setNumPic((prev) => prev - 1);
+    setPictures(updatedPictures);
+    setShowPictures(updatedShowPictures);
 };
 
-const removePictureField = (index: number) => {
-    if (picture.length > 1) {
-        const newPictures = picture.filter((_, i) => i !== index); // Remove the input at the specific index
-        setPicture(newPictures);
-    }
-};
-const [loader, setLoader] = useState(false);
 
-const isValidUrl = (url: string): boolean => {
-    try {
-      new URL(url); // ตรวจสอบว่า URL ถูกต้อง
-      return true;
-    } catch {
-      return false;
-    }
-  };
+console.log('loading',loading)
+console.log(numPic,'pictures-',pictures, '++',showPictures)
+
+
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${Port.BASE_URL}/nursinghouses`);
+        const response = await fetch(`${Port.BASE_URL}/nursinghouses/id`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
         
-        // Extract the nh_id values and find the max nh_id
-        const maxId = Math.max(...result.result.map((item: { nh_id: number }) => item.nh_id));
-        
-        // Set the homeId to the next available ID
-        setHomeId(maxId + 1);
+        setHomeId(result.result);
       } catch (err) {
         console.log(err);
       }
@@ -168,64 +174,55 @@ return (
                 className=' cursor-pointer text-normalText' icon="ion:chevron-back" width="40" height="40" />
                 <div className='text-xl font-bold text-normalText'>Home Id : {HomeId}</div>
             </div>
-            <div className=' w-full border-2 border-accent rounded-lg mt-5 pl-5 p-2 pb-8 relative'>
-                <div className='text-xl bg-neutral absolute px-3 left-10 top-[-15px] text-accent'>รูปภาพบ้านพัก</div>
-                <div className='w-full flex justify-end'>
-                    <div 
-                    onClick={addPictureField}
-                    className={picture.length == 5?'w-28 h-10 bg-unselectMenu rounded-lg flex items-center justify-center text-white cursor-pointer':'w-28 h-10 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'}>
-                        เพิ่มรูปภาพ
-                    </div>
-                </div>
-                {picture.map((pic, index) => (
-                    <div className="w-full mt-5 flex justify-center" key={index}>
-                    <div className="w-14 h-14 rounded-lg shrink-0 overflow-hidden flex justify-center items-center text-primary">
-                    {pic ? (
-                        isValidUrl(pic) ?
-                        <Image
-                            src={pic}
-                            alt="Picture"
-                            className="object-cover rounded-lg"
-                            width={56} // Specify width in pixels
-                            height={56} // Specify height in pixels
-                            style={{ objectFit: "cover" }}
-                            onError={() => setLoader(true)}
-                        />:
-                        <Hourglass
-                        visible={true}
-                        height="30"
-                        width="30"
-                        ariaLabel="rings-loading"
-                        wrapperStyle={{}}
-                        wrapperClass=""
-                        />
+            <div className='w-full h-auto border-2 border-accent rounded-lg mt-5 py-10 p-2 relative flex flex-wrap justify-center gap-5'>
+            <div className='text-xl bg-neutral absolute px-3 left-10 top-[-15px] text-accent'>รูปภาพบ้านพัก</div>
 
-                        ) : <div className='w-full h-full bg-unselectInput flex justify-center items-center'>
-                                <Icon className='text-gray-400' icon="gravity-ui:picture" width="35" height="35" />
-                            </div>}
-
-                    </div>
-                    <div className="w-full px-3 flex justify-center items-center">
-                        <input
-                        value={pic}
-                        onChange={(e) => handlePictureChange(e, index)}
-                        placeholder="เพิ่มลิงก์รูปภาพ"
-                        className="w-full h-14 rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText"
-                        />
-                    </div>
-                    <div
-                        className={picture.length == 1 ?"w-14 h-14 flex justify-center items-center shrink-0":"w-14 h-14 flex justify-center items-center text-unselectMenu hover:text-err shrink-0 cursor-pointer active:scale-95"}
-                        onClick={() => removePictureField(index)}
-                    >
-                        {picture.length == 1 ? (
-                        null
+            {numPic > 0 && (
+                showPictures.map((pic, index) => (
+                    <div key={index} className='w-80 h-52 shadow shrink-0 rounded-lg overflow-hidden flex justify-center items-center text-primary relative'>
+                        {loading ? (
+                            <Hourglass
+                                visible={true}
+                                height='30'
+                                width='30'
+                                ariaLabel='rings-loading'
+                            />
                         ) : (
-                        <Icon icon="majesticons:delete-bin" width="30" height="30" />
-                        )}  
+                            <>
+                                <img
+                                    src={pic}
+                                    alt='Picture'
+                                    className='object-cover rounded-lg'
+                                    width={320}
+                                    height={208}
+                                    style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
+                                />
+                                <div
+                                    className='absolute top-1 right-1 w-10 h-10 flex justify-center items-center text-unselectMenu hover:text-err shrink-0 cursor-pointer active:scale-95'
+                                    onClick={() => removePictureField(index)}
+                                >
+                                    <Icon icon='majesticons:delete-bin' width='30' height='30' />
+                                </div>
+                            </>
+                        )}
                     </div>
-                    </div>
-                ))}
+                ))
+            )}
 
+            {numPic < 5 && (
+                <div className='w-80 h-52 shrink-0 overflow-hidden flex justify-center items-center text-primary relative'>
+                    <label htmlFor='upload-input' className='cursor-pointer w-full h-full bg-gray-100 rounded-lg flex justify-center items-center'>
+                        <Icon icon='ic:round-plus' width='40' height='40' />
+                    </label>
+                    <input
+                        id='upload-input'
+                        type='file'
+                        accept='image/*'
+                        style={{ display: 'none' }}
+                        onChange={handleUpload}
+                    />
+                </div>
+            )}
             </div>
             {/* ------------------------------------------------------------------------------- */}
             <div className=' w-full border-2 border-accent rounded-lg mt-10 pl-5 p-2 pb-8 relative'>
