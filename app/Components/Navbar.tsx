@@ -38,9 +38,6 @@ const Navbar: React.FC<state> = ({stateManu, search, setSearch, setEditId, state
               onChange={(e) => setSearch(e.target.value)}
               placeholder={stateManu?'ค้นหาบ้านพักที่ต้องการ':'ค้นหาบทความที่ต้องการ'}
               className='w-full bg-none outline-none pr-2 rounded-md text-sm text-normalText'/>
-              {/* <div className={search?'absolute right-1 top-1 w-10 h-7 flex items-center justify-center bg-primary rounded-md text-white duration-100 cursor-pointer active:scale-95':'absolute right-1 top-1 w-10 h-7 flex items-center justify-center bg-gray-300 rounded-md text-white duration-100 cursor-pointer'}>
-                <Icon icon="material-symbols:search-rounded" width="24" height="24" />
-              </div> */}
             </div>
             <div 
             onClick={() => {

@@ -96,6 +96,18 @@ useEffect(() => {
       }
     }
   }
+  else{
+    if (search) {
+      const filteredData2 = dataNoSearch.filter(
+        (item) =>
+          item.news_id.toString().includes(search) ||
+          item.title.toString().includes(search)
+      )
+      setData(filteredData2)
+    }else{
+      setData(dataNoSearch)
+    }
+  }
   
   
 }, [statusFilter, stateManu, search])
@@ -107,15 +119,15 @@ useEffect(() => {
   if (stateManu) {
       const fetchData = async () => {
         try {
-          const response = await fetch(`${Port.BASE_URL}/nursinghouses`) // Home API
+          const response = await fetch(`${Port.BASE_URL}/nursinghouses`)
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
-          const result = await response.json(); // แปลง JSON เป็น Object
+          const result = await response.json();
           const reversedData = result.result.reverse();
           setData(reversedData);
-          setHomeIds(reversedData); // เก็บข้อมูลใน state
-          setLoading(false); // หยุดโหลดข้อมูล
+          setHomeIds(reversedData);
+          setLoading(false);
           console.log(result.result)
         } catch (err) {
           setLoading(false);
@@ -126,15 +138,15 @@ useEffect(() => {
   }else{
     const fetchData = async () => {
       try {
-        const response = await fetch(`${Port.BASE_URL}/news`) // Article API
+        const response = await fetch(`${Port.BASE_URL}/news`)
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        const result = await response.json(); // แปลง JSON เป็น Object
+        const result = await response.json();
         const reversedData = result.result.reverse();
-        setData(reversedData); // เก็บข้อมูลใน state
-        setArticleIds(reversedData); // เก็บข้อมูลใน state
-        setLoading(false); // หยุดโหลดข้อมูล
+        setData(reversedData);
+        setArticleIds(reversedData);
+        setLoading(false);
       } catch (err) {
         setLoading(false);
       }
@@ -143,7 +155,6 @@ useEffect(() => {
     fetchData();
   }
 }, [reload, stateManu])
-console.log('+++',data)
 
 
 
@@ -167,8 +178,10 @@ console.log('+++',data)
           : 'w-60 bg-white rounded-lg shadow border-[1px] border-x-unselectMenu cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative'
           ):'w-60 bg-white rounded-lg shadow border-[1px] border-accent cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative'}>
           <div className='mx-auto w-56 bg-gray-200 mt-2 h-40 rounded-md shrink-0'>
-            <img src={item.images[0]?.image_link}
-            className='w-56 h-40 rounded-md object-cover'/>
+            {item.images && item.images.length > 0 && (
+              <img src={item.images[0]?.image_link}
+              className='w-56 h-40 rounded-md object-cover'/>
+            )}
           </div>
           <div className='mx-auto h-12 w-56 my-2 break-words line-clamp-2'>
               {stateManu?item.name:item.title}

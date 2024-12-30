@@ -56,16 +56,14 @@ const [textAreas, setTextAreas] = useState<TextArea[]>([
 const [formattedDate, setFormattedDate] = useState<string>('');
 
 
-// ฟังก์ชันจัดการการเปลี่ยนแปลงของ textarea
 const handleChangetextarea = (e: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
     const newTextAreas = [...textAreas];
-    newTextAreas[index].text = e.target.value; // อัพเดทค่า text ในอ็อบเจ็กต์
+    newTextAreas[index].text = e.target.value;
     setTextAreas(newTextAreas);
 };
 
-// ฟังก์ชันเพิ่ม textarea ใหม่
 const addTextArea = () => {
-    setTextAreas([...textAreas, { text: '', size: 'Paragraph', bold: false }]); // เพิ่มอ็อบเจ็กต์ใหม่
+    setTextAreas([...textAreas, { text: '', size: 'Paragraph', bold: false }]);
 };
 
 
@@ -78,13 +76,13 @@ useEffect(() => {
       setFormattedDate(formatted);
     }
   }, []);
-// useEffect เพื่อปรับขนาดทุกๆ textarea
+
 useEffect(() => {
     textAreas.forEach((_, index) => {
     const textarea = document.getElementById(`auto-resize-textarea-${index}`) as HTMLTextAreaElement;
     if (textarea) {
-        textarea.style.height = 'auto'; // รีเซ็ตความสูง
-        textarea.style.height = `${textarea.scrollHeight}px`; // ปรับความสูงตามเนื้อหาภายใน
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
     }
     });
 }, [textAreas]);
@@ -94,7 +92,6 @@ const handleSizeChange = (index: number) => {
     const newTextAreas = [...textAreas];
     const currentSize = newTextAreas[index].size;
 
-    // เปลี่ยนขนาดตามลำดับ Paragraph -> Heading -> Small -> Paragraph
     if (currentSize === 'Paragraph') {
     newTextAreas[index].size = 'Heading';
     } else if (currentSize === 'Heading') {
@@ -103,7 +100,7 @@ const handleSizeChange = (index: number) => {
     newTextAreas[index].size = 'Paragraph';
     }
 
-    setTextAreas(newTextAreas); // อัปเดต state
+    setTextAreas(newTextAreas);
 };
 
 
@@ -117,16 +114,15 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
       case 'Small':
         return '12px';
       default:
-        return '14px'; // This line is redundant due to strict typing
+        return '14px';
     }
   };
 
 
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // ป้องกันการ reload หน้าเว็บ
+    e.preventDefault();
     try {
-        console.log('************',textAreas)
         const formData = new FormData();
         formData.append('title', title);
         textAreas.forEach((textArea, index) => {
@@ -140,8 +136,10 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
         if (descriptionPicture) {
             formData.append('images', descriptionPicture as Blob);
         }        
-        const combinedDeleteIds = [deleteTitlePictureId, deleteDescriptionPictureId].join(',');
-        formData.append('delete_images', combinedDeleteIds);
+        if(deleteTitlePictureId || deleteDescriptionPictureId){
+            const combinedDeleteIds = [deleteTitlePictureId, deleteDescriptionPictureId].join(',');
+            formData.append('delete_images', combinedDeleteIds);
+        }
         
         formData.forEach((value, key) => {
             console.log('key:', key, 'value:', value);
@@ -153,17 +151,17 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
       });
 
       if (!response.ok) {
-        setLastData({ error: 'something_went_wrong' }); // Save error info in state
+        setLastData({ error: 'something_went_wrong' });
         setStateBanner(true);
-        throw new Error('Network response was not ok'); // Re-throw error for logging
+        throw new Error('Network response was not ok');
       }
 
       const data = await response.json();
       console.log('Success:', data);
-      setReload(!reload); // โหลดข้อมูลใหม่
-      setStateEA(false); // ปิดหน้า AddHome
+      setReload(!reload);
+      setStateEA(false);
       setStateBanner(true);
-      setLastData({data:data.result.news_id, massage:'EditArticle_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
+      setLastData({data:data.result.news_id, massage:'EditArticle_success'});
     } catch (error) {
         console.log('Error:', error);
       throw new Error( error as string);
@@ -223,27 +221,25 @@ useEffect(() => {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
-        console.log(editId)
-        console.log('result--------',result.result)
         const { title, dialog, images } = result.result;
         setOldTitle(title);
         
         setTitle(title);
 
         const updatedDialog: TextArea[] = dialog.map((item: DialogItem) => ({
-            ...item,                         // คัดลอกข้อมูลทั้งหมดของ item
-            text: item.desc,                  // เพิ่ม key ใหม่ชื่อ 'text' และกำหนดค่าจาก 'desc'
-            size: item.type,                  // เพิ่ม key ใหม่ชื่อ 'size' และกำหนดค่าจาก 'type'
-            desc: undefined,                  // กำจัด key 'desc' (ถ้าไม่ต้องการเก็บไว้)
-            type: undefined                   // กำจัด key 'type' (ถ้าไม่ต้องการเก็บไว้)
+            ...item,
+            text: item.desc,
+            size: item.type,
+            desc: undefined,
+            type: undefined
         }));
         setTextAreas(updatedDialog);
         const updatedOldDialog: TextArea[] = dialog.map((item: DialogItem) => ({
-            ...item,                         // คัดลอกข้อมูลทั้งหมดของ item
-            text: item.desc,                  // เพิ่ม key ใหม่ชื่อ 'text' และกำหนดค่าจาก 'desc'
-            size: item.type,                  // เพิ่ม key ใหม่ชื่อ 'size' และกำหนดค่าจาก 'type'
-            desc: undefined,                  // กำจัด key 'desc' (ถ้าไม่ต้องการเก็บไว้)
-            type: undefined                   // กำจัด key 'type' (ถ้าไม่ต้องการเก็บไว้)
+            ...item,
+            text: item.desc,
+            size: item.type,
+            desc: undefined,
+            type: undefined
         }));
         setOldTextAreas(updatedOldDialog);
         setOldTitlePictureId(images[0].image_id);
@@ -271,31 +267,23 @@ useEffect(() => {
     const titleChanged = title !== oldTitle;
     const numberTextAreasChanged = textAreas.length !== oldTextAreas.length;
     const textAreasChanged = textAreas.some((textArea, index) => {
-        const oldTextArea = oldTextAreas[index]; // ดึงข้อมูลเก่าออกมา
-        if (!oldTextArea) return true; // ถ้าไม่มีข้อมูลเก่า ถือว่าเปลี่ยนแปลงแล้ว
+        const oldTextArea = oldTextAreas[index];
+        if (!oldTextArea) return true;
     
-        // เปรียบเทียบค่าระหว่าง textArea ปัจจุบันและเดิม
         return (
             textArea.text !== oldTextArea?.text ||
             textArea.size !== oldTextArea?.size ||
             textArea.bold !== oldTextArea?.bold
         );
     });
-    
 
     const pictureChanged = deleteTitlePictureId || deleteDescriptionPictureId;
     const allInfoFilled = textAreas.every(({ text, bold }) => {
         return text !== '' && showTitlePicture !== undefined ;
-        // return text !== '' && typeof bold === 'boolean' && showTitlePicture !== undefined ;
     });
     const allInfoFilled2 = title !== '';
-
     const allInfoFilled3 =  descriptionPicture !== undefined;
 
-    console.log('infoChanged',textAreasChanged, allInfoFilled, allInfoFilled2)
-
-    
-    
     const changes = (titleChanged || textAreasChanged || pictureChanged || allInfoFilled3 || numberTextAreasChanged) && allInfoFilled && allInfoFilled2 ? true : false;
     setHasChanged(changes);
 

@@ -48,12 +48,11 @@ const [info, setInfo] = useState<InfoType>({
 const [loading, setLoading] = useState(false)
 
 const allInfoFilled = Object.values(info).every(value => {
-    // If it's a number (like price), check if it's non-zero
     if (typeof value === 'number') {
       return value > 0;
     }
-    return value !== ''; // Check if the value is not an empty string
-  }) && numPic > 0; // Ensure all pictures are filled
+    return value !== '';
+  }) && numPic > 0;
   
 
 
@@ -87,11 +86,6 @@ const removePictureField = (index: number) => {
 };
 
 
-console.log('loading',loading)
-console.log(numPic,'pictures-',pictures, '++',showPictures)
-
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -115,7 +109,7 @@ console.log(numPic,'pictures-',pictures, '++',showPictures)
 
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // ป้องกันการ reload หน้าเว็บ
+    e.preventDefault();
     try {
 
         const formData = new FormData();
@@ -137,24 +131,24 @@ console.log(numPic,'pictures-',pictures, '++',showPictures)
       });
 
       if (!response.ok) {
-        const errorData = await response.json(); // Try to parse error details
+        const errorData = await response.json();
         if (errorData.message && errorData.message.includes('uni_nursing_houses_name')) {
-            setLastData({ error: 'uni_nursing_houses_name' }); // Save error info in state
+            setLastData({ error: 'uni_nursing_houses_name' });
             setStateBanner(true);
-            throw new Error(errorData.message); // Re-throw error for logging
+            throw new Error(errorData.message);
         }else{
-            setLastData({ error: 'something_went_wrong' }); // Save error info in state
+            setLastData({ error: 'something_went_wrong' });
             setStateBanner(true);
-            throw new Error('Network response was not ok'); // Re-throw error for logging
+            throw new Error('Network response was not ok');
         }
       }
 
       const data = await response.json();
       console.log('Success:', data);
-      setReload(!reload); // โหลดข้อมูลใหม่
-      setStateEA(false); // ปิดหน้า AddHome
+      setReload(!reload);
+      setStateEA(false);
       setStateBanner(true);
-      setLastData({data:data.result, massage:'Addhome_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
+      setLastData({data:data.result, massage:'Addhome_success'});
     } catch (error) {
         console.log('Error:', error);
       throw new Error( error as string);

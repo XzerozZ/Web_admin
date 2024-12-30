@@ -12,8 +12,8 @@ import Banner from './Components/Banner';
 
 
 interface LastData {
-  error?: string; // หรือคุณอาจจะใช้ `null` แทน `undefined` ก็ได้
-  data?: any; // ใช้ประเภทที่เหมาะสมตามที่ต้องการ
+  error?: string;
+  data?: any;
   message?: string;
 }
 
