@@ -150,8 +150,8 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
             formData.append(`type`, textArea.size);
             formData.append(`bold`, String(textArea.bold));
         });
-        formData.append('images', titlePicture as Blob);
-        formData.append('images', descriptionPicture as Blob);
+        formData.append('image_title', titlePicture as Blob);
+        formData.append('image_desc', descriptionPicture as Blob);
 
 
       const response = await fetch(`${Port.BASE_URL}/news`, {

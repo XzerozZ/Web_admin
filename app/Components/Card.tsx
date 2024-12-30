@@ -34,6 +34,8 @@ interface NursingHouse {
   title: string;
   description: string;
   content: string;
+  image_title: string;
+  image_desc: string;
 }
 
 interface Article {
@@ -178,10 +180,15 @@ useEffect(() => {
           : 'w-60 bg-white rounded-lg shadow border-[1px] border-x-unselectMenu cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative'
           ):'w-60 bg-white rounded-lg shadow border-[1px] border-accent cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative'}>
           <div className='mx-auto w-56 bg-gray-200 mt-2 h-40 rounded-md shrink-0'>
-            {item.images && item.images.length > 0 && (
+          {stateManu?
+            (item.images && item.images.length > 0 && (
               <img src={item.images[0]?.image_link}
               className='w-56 h-40 rounded-md object-cover'/>
-            )}
+            )):
+            <img src={item.image_title}
+              className='w-56 h-40 rounded-md object-cover'/>
+              }
+
           </div>
           <div className='mx-auto h-12 w-56 my-2 break-words line-clamp-2'>
               {stateManu?item.name:item.title}

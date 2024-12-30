@@ -37,12 +37,12 @@ const EditArticle: React.FC<State> = ({editId, setStateEA, reload, setReload, st
 
 const [titlePicture, setTitlePicture] = useState<File>();
 const [showTitlePicture, setShowTitlePicture] = useState<any>();
-const [oldTitlePictureId, setOldTitlePictureId] = useState();
-const [deleteTitlePictureId, setDeleteTitlePictureId] = useState('');
+const [oldTitlePicture, setOldTitlePicture] = useState();
+// const [deleteTitlePicture, setDeleteTitlePicture] = useState('');
 const [descriptionPicture, setDescriptionPicture] = useState<File>();
 const [showDescriptionPicture, setShowDescriptionPicture] = useState<any>();
-const [oldDescriptionPictureId, setOldDescriptionPictureId] = useState<string | undefined>(undefined);
-const [deleteDescriptionPictureId, setDeleteDescriptionPictureId] = useState('');
+const [oldDescriptionPicture, setOldDescriptionPicture] = useState<string | undefined>(undefined);
+// const [deleteDescriptionPictureId, setDeleteDescriptionPictureId] = useState('');
 
 const [oldTitle, setOldTitle] = useState<string>('');
 const [oldTextAreas, setOldTextAreas] = useState<TextArea[]>([
@@ -131,14 +131,12 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
             formData.append(`bold`, String(textArea.bold));
         });
         if (titlePicture) {
-            formData.append('images', titlePicture as Blob);
+            formData.append('image_title', titlePicture as Blob);
         }
         if (descriptionPicture) {
-            formData.append('images', descriptionPicture as Blob);
-        }        
-        if(deleteTitlePictureId || deleteDescriptionPictureId){
-            const combinedDeleteIds = [deleteTitlePictureId, deleteDescriptionPictureId].join(',');
-            formData.append('delete_images', combinedDeleteIds);
+            formData.append('image_desc', descriptionPicture as Blob);
+        }else{
+            formData.append('image_desc', 'del_image');
         }
         
         formData.forEach((value, key) => {
@@ -182,9 +180,6 @@ const handleUploadtitle = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 const removePictureFieldtitle = () => {
-    if (oldTitlePictureId !== undefined) {
-        setDeleteTitlePictureId(oldTitlePictureId);
-    }
     setTitlePicture(undefined);
     setShowTitlePicture(undefined);
 };
@@ -202,9 +197,6 @@ const handleUploaddescription = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 const removePictureFielddescription = () => {
-    if (oldDescriptionPictureId !== undefined) {
-        setDeleteDescriptionPictureId(oldDescriptionPictureId);
-    }
     setDescriptionPicture(undefined);
     setShowDescriptionPicture(undefined);
 };
@@ -221,7 +213,8 @@ useEffect(() => {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
-        const { title, dialog, images } = result.result;
+        console.log('result.result:', result.result);
+        const { title, dialog, image_title, image_desc } = result.result;
         setOldTitle(title);
         
         setTitle(title);
@@ -242,13 +235,12 @@ useEffect(() => {
             type: undefined
         }));
         setOldTextAreas(updatedOldDialog);
-        setOldTitlePictureId(images[0].image_id);
-        setShowTitlePicture([images[0].image_link]);
-        if(images.length > 1){
-            setOldDescriptionPictureId(images[1].image_id);
-            setShowDescriptionPicture([images[1].image_link]);
+        setShowTitlePicture(image_title);
+        setOldTitlePicture(image_title);
+        if(image_desc){
+            setShowDescriptionPicture(image_desc);
+            setOldDescriptionPicture(image_desc);
         }
-        
         
       };
   
@@ -261,7 +253,7 @@ useEffect(() => {
 
     useEffect(() => {
         checkChanges();
-      }, [ title, textAreas, deleteTitlePictureId, deleteDescriptionPictureId, showTitlePicture, showDescriptionPicture, descriptionPicture ]);
+      }, [ title, textAreas, showTitlePicture, showDescriptionPicture, descriptionPicture, oldTitlePicture, oldDescriptionPicture, oldTitle, oldTextAreas]);
 
     const checkChanges = () => {
     const titleChanged = title !== oldTitle;
@@ -277,14 +269,14 @@ useEffect(() => {
         );
     });
 
-    const pictureChanged = deleteTitlePictureId || deleteDescriptionPictureId;
     const allInfoFilled = textAreas.every(({ text, bold }) => {
         return text !== '' && showTitlePicture !== undefined ;
     });
     const allInfoFilled2 = title !== '';
     const allInfoFilled3 =  descriptionPicture !== undefined;
+    const picturesChanged = showTitlePicture !== oldTitlePicture || showDescriptionPicture !== oldDescriptionPicture;
 
-    const changes = (titleChanged || textAreasChanged || pictureChanged || allInfoFilled3 || numberTextAreasChanged) && allInfoFilled && allInfoFilled2 ? true : false;
+    const changes = (titleChanged || textAreasChanged || allInfoFilled3 || numberTextAreasChanged || picturesChanged) && allInfoFilled && allInfoFilled2 ? true : false;
     setHasChanged(changes);
 
     };
