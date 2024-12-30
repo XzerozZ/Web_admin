@@ -5,6 +5,7 @@ import logo from '../../public/asset/logo.png';
 import { Icon } from '@iconify-icon/react';
 import { Hourglass } from 'react-loader-spinner'
 import Port from '../Port';
+import { text } from 'stream/consumers';
 
 
 interface State {
@@ -23,25 +24,37 @@ interface TextArea {
     bold: boolean;
 }
 
+interface DialogItem {
+    desc: string;
+    type: 'Heading' | 'Paragraph' | 'Small';
+    text?: string;
+    size?: 'Heading' | 'Paragraph' | 'Small';
+}
 
 
-
-const AddArticle: React.FC<State> = ({editId, setStateEA, reload, setReload, stateBanner, setStateBanner, setLastData}) => {
-
+const EditArticle: React.FC<State> = ({editId, setStateEA, reload, setReload, stateBanner, setStateBanner, setLastData}) => {
 
 
-const [ArticleId, setArticleId] = useState<number>(0);
 const [titlePicture, setTitlePicture] = useState<File>();
 const [showTitlePicture, setShowTitlePicture] = useState<any>();
+const [oldTitlePictureId, setOldTitlePictureId] = useState();
+const [deleteTitlePictureId, setDeleteTitlePictureId] = useState('');
 const [descriptionPicture, setDescriptionPicture] = useState<File>();
 const [showDescriptionPicture, setShowDescriptionPicture] = useState<any>();
+const [oldDescriptionPictureId, setOldDescriptionPictureId] = useState<string | undefined>(undefined);
+const [deleteDescriptionPictureId, setDeleteDescriptionPictureId] = useState('');
+
+const [oldTitle, setOldTitle] = useState<string>('');
+const [oldTextAreas, setOldTextAreas] = useState<TextArea[]>([
+    { text: '', size: 'Paragraph', bold: false }
+]);
 const [title, setTitle] = useState<string>('');
 const [textAreas, setTextAreas] = useState<TextArea[]>([
     { text: '', size: 'Paragraph', bold: false }
 ]);
+
 const [formattedDate, setFormattedDate] = useState<string>('');
 
-console.log(textAreas)
 
 // ฟังก์ชันจัดการการเปลี่ยนแปลงของ textarea
 const handleChangetextarea = (e: React.ChangeEvent<HTMLTextAreaElement>, index: number) => {
@@ -64,22 +77,7 @@ useEffect(() => {
       const formatted = `${date.getDate()} ${thaiMonths[date.getMonth()]} ${yearInBE}`;
       setFormattedDate(formatted);
     }
-    const fetchData = async () => {
-        try {
-          const response = await fetch(`${Port.BASE_URL}/news/id`);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const result = await response.json();
-          
-          setArticleId(result.result);
-        } catch (err) {
-          console.log(err);
-        }
-      };
-      fetchData();
   }, []);
-
 // useEffect เพื่อปรับขนาดทุกๆ textarea
 useEffect(() => {
     textAreas.forEach((_, index) => {
@@ -89,29 +87,7 @@ useEffect(() => {
         textarea.style.height = `${textarea.scrollHeight}px`; // ปรับความสูงตามเนื้อหาภายใน
     }
     });
-}, [textAreas]); // เมื่อ textAreas เปลี่ยนแปลง
-
-// เช็คว่า textAreas ทุกตัวมีข้อมูลครบหรือไม่
-useEffect(() => {
-    checkChanges();
-}, [ title, textAreas, showTitlePicture]);
-
-const [hasChanged, setHasChanged] = useState<boolean>(false);
-
-const checkChanges = () => {
-    const allInfoFilled = textAreas.every(({ text, bold }) => {
-        return text !== '' && showTitlePicture !== undefined ;
-        // return text !== '' && typeof bold === 'boolean' && showTitlePicture !== undefined ;
-    });
-    const allInfoFilled2 = title !== '';
-
-    
-    
-    const changes = allInfoFilled && allInfoFilled2 ? true : false;
-    setHasChanged(changes);
-
-    };
-
+}, [textAreas]);
 
 
 const handleSizeChange = (index: number) => {
@@ -150,7 +126,7 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // ป้องกันการ reload หน้าเว็บ
     try {
-
+        console.log('************',textAreas)
         const formData = new FormData();
         formData.append('title', title);
         textAreas.forEach((textArea, index) => {
@@ -158,12 +134,21 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
             formData.append(`type`, textArea.size);
             formData.append(`bold`, String(textArea.bold));
         });
-        formData.append('images', titlePicture as Blob);
-        formData.append('images', descriptionPicture as Blob);
+        if (titlePicture) {
+            formData.append('images', titlePicture as Blob);
+        }
+        if (descriptionPicture) {
+            formData.append('images', descriptionPicture as Blob);
+        }        
+        const combinedDeleteIds = [deleteTitlePictureId, deleteDescriptionPictureId].join(',');
+        formData.append('delete_images', combinedDeleteIds);
+        
+        formData.forEach((value, key) => {
+            console.log('key:', key, 'value:', value);
+        });
 
-
-      const response = await fetch(`${Port.BASE_URL}/news`, {
-        method: 'POST',
+      const response = await fetch(`${Port.BASE_URL}/news/${editId}`, {
+        method: 'PUT',
         body: formData,
       });
 
@@ -178,7 +163,7 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
       setReload(!reload); // โหลดข้อมูลใหม่
       setStateEA(false); // ปิดหน้า AddHome
       setStateBanner(true);
-      setLastData({data:data.result, massage:'Addarticla_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
+      setLastData({data:data.result.news_id, massage:'EditArticle_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
     } catch (error) {
         console.log('Error:', error);
       throw new Error( error as string);
@@ -199,6 +184,9 @@ const handleUploadtitle = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 const removePictureFieldtitle = () => {
+    if (oldTitlePictureId !== undefined) {
+        setDeleteTitlePictureId(oldTitlePictureId);
+    }
     setTitlePicture(undefined);
     setShowTitlePicture(undefined);
 };
@@ -216,9 +204,126 @@ const handleUploaddescription = (e: React.ChangeEvent<HTMLInputElement>) => {
 };
 
 const removePictureFielddescription = () => {
+    if (oldDescriptionPictureId !== undefined) {
+        setDeleteDescriptionPictureId(oldDescriptionPictureId);
+    }
     setDescriptionPicture(undefined);
     setShowDescriptionPicture(undefined);
 };
+
+
+// ----------------------------------------------------------------------------------------
+
+
+useEffect(() => {
+    if (editId) {
+      const fetchData = async () => {
+        const response = await fetch(`${Port.BASE_URL}/news/${editId}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const result = await response.json();
+        console.log(editId)
+        console.log('result--------',result.result)
+        const { title, dialog, images } = result.result;
+        setOldTitle(title);
+        
+        setTitle(title);
+
+        const updatedDialog: TextArea[] = dialog.map((item: DialogItem) => ({
+            ...item,                         // คัดลอกข้อมูลทั้งหมดของ item
+            text: item.desc,                  // เพิ่ม key ใหม่ชื่อ 'text' และกำหนดค่าจาก 'desc'
+            size: item.type,                  // เพิ่ม key ใหม่ชื่อ 'size' และกำหนดค่าจาก 'type'
+            desc: undefined,                  // กำจัด key 'desc' (ถ้าไม่ต้องการเก็บไว้)
+            type: undefined                   // กำจัด key 'type' (ถ้าไม่ต้องการเก็บไว้)
+        }));
+        setTextAreas(updatedDialog);
+        const updatedOldDialog: TextArea[] = dialog.map((item: DialogItem) => ({
+            ...item,                         // คัดลอกข้อมูลทั้งหมดของ item
+            text: item.desc,                  // เพิ่ม key ใหม่ชื่อ 'text' และกำหนดค่าจาก 'desc'
+            size: item.type,                  // เพิ่ม key ใหม่ชื่อ 'size' และกำหนดค่าจาก 'type'
+            desc: undefined,                  // กำจัด key 'desc' (ถ้าไม่ต้องการเก็บไว้)
+            type: undefined                   // กำจัด key 'type' (ถ้าไม่ต้องการเก็บไว้)
+        }));
+        setOldTextAreas(updatedOldDialog);
+        setOldTitlePictureId(images[0].image_id);
+        setShowTitlePicture([images[0].image_link]);
+        if(images.length > 1){
+            setOldDescriptionPictureId(images[1].image_id);
+            setShowDescriptionPicture([images[1].image_link]);
+        }
+        
+        
+      };
+  
+      fetchData();
+    }
+  }, [editId]);
+
+
+    const [hasChanged, setHasChanged] = useState<boolean>(false);
+
+    useEffect(() => {
+        checkChanges();
+      }, [ title, textAreas, deleteTitlePictureId, deleteDescriptionPictureId, showTitlePicture, showDescriptionPicture, descriptionPicture ]);
+
+    const checkChanges = () => {
+    const titleChanged = title !== oldTitle;
+    const numberTextAreasChanged = textAreas.length !== oldTextAreas.length;
+    const textAreasChanged = textAreas.some((textArea, index) => {
+        const oldTextArea = oldTextAreas[index]; // ดึงข้อมูลเก่าออกมา
+        if (!oldTextArea) return true; // ถ้าไม่มีข้อมูลเก่า ถือว่าเปลี่ยนแปลงแล้ว
+    
+        // เปรียบเทียบค่าระหว่าง textArea ปัจจุบันและเดิม
+        return (
+            textArea.text !== oldTextArea?.text ||
+            textArea.size !== oldTextArea?.size ||
+            textArea.bold !== oldTextArea?.bold
+        );
+    });
+    
+
+    const pictureChanged = deleteTitlePictureId || deleteDescriptionPictureId;
+    const allInfoFilled = textAreas.every(({ text, bold }) => {
+        return text !== '' && showTitlePicture !== undefined ;
+        // return text !== '' && typeof bold === 'boolean' && showTitlePicture !== undefined ;
+    });
+    const allInfoFilled2 = title !== '';
+
+    const allInfoFilled3 =  descriptionPicture !== undefined;
+
+    console.log('infoChanged',textAreasChanged, allInfoFilled, allInfoFilled2)
+
+    
+    
+    const changes = (titleChanged || textAreasChanged || pictureChanged || allInfoFilled3 || numberTextAreasChanged) && allInfoFilled && allInfoFilled2 ? true : false;
+    setHasChanged(changes);
+
+    };
+
+
+const handleDeleteArticle = async () => {
+    try {
+        const response = await fetch(`${Port.BASE_URL}/news/${editId}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Success:', data);
+        setReload(!reload);
+        setStateEA(false);
+        setStateBanner(true);
+        setLastData({data:editId, massage:'Deletearticla_success'});
+    } catch (error) {
+        console.error('Error:', error);
+        throw new Error( error as string);
+    }
+};
+
+
+
 
 
 
@@ -230,7 +335,7 @@ return (
                 <Icon
                 onClick={() => setStateEA(false)}
                 className=' cursor-pointer text-normalText' icon="ion:chevron-back" width="40" height="40" />
-                <div className='text-xl font-bold text-normalText'>Article Id : {ArticleId}</div>
+                <div className='text-xl font-bold text-normalText'>Article Id : {editId}</div>
             </div>
             <div className=' w-full border-2 border-accent rounded-lg mt-5 pl-5 p-2 pb-8 relative'>
                 <div className='text-xl bg-neutral absolute px-3 left-10 top-[-15px] text-accent'>หัวข้อและหน้าปกบทความ</div>
@@ -252,7 +357,7 @@ return (
                     : <>
                         <div className='w-96 h-60 rounded-lg relative'>
                             <img
-                                src={showTitlePicture ? showTitlePicture[0] : undefined}
+                                src={showTitlePicture ? showTitlePicture : undefined}
                                 alt='Picture'
                                 className='object-cover rounded-lg w-full h-full'
                                 style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
@@ -293,35 +398,36 @@ return (
                     <div className='w-2/5'>
                         <div className='w-[320px] h-[600px] z-20 bg-neutral pb-5 bg-netural rounded-3xl my-3 mx-auto sticky top-10 shadow-lg border-4 border-normalText overflow-y-auto slidenon'>
                             <div className='w-[313px] h-[180px] bg-gray-200'>
-                                {showTitlePicture === undefined ?
-                                    <>
-                                        <label htmlFor='upload-input' 
-                                        className='cursor-pointer w-full h-full bg-gray-100 rounded-lg flex justify-center items-center'>
-                                        <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
-                                        </label>
-                                        <input
-                                            id='upload-input'
-                                            type='file'
-                                            accept='image/*'
-                                            style={{ display: 'none' }}
-                                            onChange={handleUploadtitle}
+                            {showTitlePicture === undefined ?
+                                <>
+                                    <label htmlFor='upload-input' 
+                                    className='cursor-pointer w-full h-full bg-gray-100 rounded-lg flex justify-center items-center'>
+                                    <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
+                                    </label>
+                                    <input
+                                        id='upload-input'
+                                        type='file'
+                                        accept='image/*'
+                                        style={{ display: 'none' }}
+                                        onChange={handleUploadtitle}
+                                    />
+                                </>
+                                : <>
+                                    <div className='w-full h-full relative'>
+                                        <img
+                                            src={showTitlePicture ? showTitlePicture : undefined}
+                                            alt='Picture'
+                                            className='object-cove w-full h-full rounded-none'
+                                            style={{ objectFit: 'cover' }}
                                         />
-                                    </>
-                                    : <>
-                                        <div className='w-full h-full relative'>
-                                            <img
-                                                src={showTitlePicture ? showTitlePicture : undefined}
-                                                alt='Picture'
-                                                className='object-cove w-full h-full rounded-none'
-                                                style={{ objectFit: 'cover' }}
-                                            />
-                                        </div>
-                                    </>
-                                        }
-                                </div>
+                                    </div>
+                                </>
+                                    }
+                            </div>
                             <div className={title?'w-full mt-3 px-3 h-auto text-lg font-bold break-words min-h-7':'w-full mt-2 px-3 h-auto text-lg font-bold break-words min-h-7 text-unselectMenu'}>{title?title:'หัวข้อ'}</div>
                             <div className='w-full mt-2 px-3 h-auto text-xs break-words mb-5'>{formattedDate}</div>
                             {/* ถ้ามีรูปเอารูปมาแสดง */}
+                            
                             {showDescriptionPicture === undefined ?
                                 <>
                                 </>
@@ -338,6 +444,7 @@ return (
                                     </div>
                                 </>
                             }
+                            
                             <div className='w-full mt-5 h-auto'>
                                 {textAreas.map((textArea, index) => (
                                     <div key={index} className='w-full px-3 h-auto'>
@@ -362,11 +469,11 @@ return (
                         <div className='w-full flex justify-between mt-5 px-3'>
 
                         </div>
-                            <div className='w-96 h-60 ml-3 bg-unselectInput rounded-lg flex justify-center items-center active:bg-gray-300 duration-100'>
+                            <div className='w-96 min-h-60 ml-3 bg-gray-100 rounded-lg flex justify-center items-center active:bg-gray-300 duration-100'>
                                 {showDescriptionPicture === undefined ?
                                     <>
                                         <label htmlFor='upload-input' 
-                                        className='cursor-pointer w-full h-full bg-gray-100 rounded-lg flex justify-center items-center'>
+                                        className='cursor-pointer w-full h-full rounded-lg flex justify-center items-center'>
                                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                                         </label>
                                         <input
@@ -378,12 +485,12 @@ return (
                                         />
                                     </>
                                     : <>
-                                        <div className='w-96 h-60 rounded-lg relative'>
+                                        <div className='w-96 h-auto rounded-lg relative'>
                                             <img
-                                                src={showDescriptionPicture ? showDescriptionPicture[0] : undefined}
+                                                src={showDescriptionPicture ? showDescriptionPicture : undefined}
                                                 alt='Picture'
                                                 className='object-cover rounded-lg w-full h-full'
-                                                style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
+                                                style={{ objectFit: 'contain', borderRadius: '0.5rem' }}
                                             />
                                             <div
                                             className='absolute top-1 right-1 w-10 h-10 flex justify-center items-center text-unselectMenu hover:text-err shrink-0 cursor-pointer active:scale-95'
@@ -404,7 +511,7 @@ return (
                                 <textarea
                                 id={`auto-resize-textarea-${index}`}
                                 placeholder='กรอกคำอธิบาย'
-                                value={text}
+                                value={text || ''}
                                 typeof='text'
                                 onChange={(e) => handleChangetextarea(e, index)}
                                 className={`py-2 w-full h-40 resize-none pr-8 overflow-hidden rounded-lg border-2 border-unselectInput outline-none px-3 text-normalText ${bold ? 'font-bold' : ''}`}
@@ -447,14 +554,16 @@ return (
                 {/* ------------------------------------------------------------------------------- */}
             </div> 
             <div className='w-full flex justify-end mt-5 gap-5'>
-            {/* <div className='w-40 h-12 bg-err rounded-lg flex items-center justify-center text-white cursor-pointer' >
+            <div 
+            onClick={handleDeleteArticle}
+            className='w-40 h-12 bg-err rounded-lg flex items-center justify-center text-white cursor-pointer' >
                 ลบบทความ
-            </div> */}
+            </div>
             <button 
             type={hasChanged?'submit':'button'}
             className={hasChanged?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
-            :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white cursor-pointer'} >
-                เพิ่มบทความ
+            :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white'} >
+                แก้ไขบทความ
             </button>
         </div>
     </form>
@@ -462,4 +571,4 @@ return (
   )
 }
 
-export default AddArticle
+export default EditArticle

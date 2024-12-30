@@ -3,6 +3,7 @@ import React from 'react'
 import { Icon } from '@iconify-icon/react';
 import Image from 'next/image'
 import logo from '../../public/asset/logo.png'
+import Port from '../Port';
 
 interface state {
     stateManu: boolean,
@@ -16,7 +17,7 @@ const Sidebar: React.FC<state> = ({stateManu, setStateManu, setSearch, setStateE
 
 const handleLogout = async () => {
     try {
-        await fetch('/api/logout', {
+        await fetch(`${Port.BASE_URL}/auth/logout`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

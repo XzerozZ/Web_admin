@@ -12,6 +12,7 @@ import Banner from '../Components/Banner';
 import AddHome from './AddHome';
 import EditHome from './EditHome';
 import AddArticle from './AddArticle';
+import EditArticle from './EditArticle';
 
 
 export default function Home() {
@@ -26,7 +27,7 @@ const [editId, setEditId] = useState<number | null>(null)
 const [stateEA, setStateEA] = useState(false)
 
 
-const [lastData, setLastData] = useState([]); // ข้อมูลที่ดึงมาจาก API
+const [lastData, setLastData] = useState<{ message: string } | []>([]); // ข้อมูลที่ดึงมาจาก API
 const [reload, setReload] = useState(false); // สถานะโหลดข้อมูล
 
 const [stateBanner, setStateBanner] = useState(false)
@@ -37,12 +38,12 @@ const [token, setToken] = useState('')
 
 
 useEffect(() => {
-  const token = localStorage.getItem('token');
-  const username = localStorage.getItem('username');
+  const tokenS = localStorage.getItem('token');
   const login = localStorage.getItem('login');
+  
   if(login){
-    setToken(token)
-    setLastData({ massage: 'Login_success' });
+    setToken(tokenS as string);
+    setLastData({ message: 'Login_success' });
     setStateBanner(true);
     localStorage.removeItem('login');
   }else if(token == undefined){
@@ -97,10 +98,12 @@ useEffect(() => {
                   :<EditHome editId={editId} setStateEA={setStateEA} reload={reload} setReload={setReload} stateBanner={stateBanner} setStateBanner={setStateBanner} setLastData={setLastData}/>
                 )
                 
-                :<AddArticle editId={editId} setStateEA={setStateEA} reload={reload} setReload={setReload} stateBanner={stateBanner} setStateBanner={setStateBanner} setLastData={setLastData}/>
+                :(editId == null
+                  ?<AddArticle editId={editId} setStateEA={setStateEA} reload={reload} setReload={setReload} stateBanner={stateBanner} setStateBanner={setStateBanner} setLastData={setLastData}/>
+                  :<EditArticle editId={editId} setStateEA={setStateEA} reload={reload} setReload={setReload} stateBanner={stateBanner} setStateBanner={setStateBanner} setLastData={setLastData}/>)
               )
               :
-              <Card stateManu={stateManu} search={search} setEditId={setEditId} setStateEA={setStateEA} reload={reload} setReload={setReload} statusFilter={statusFilter}/>
+              <Card stateManu={stateManu} search={search} setEditId={setEditId} setStateEA={setStateEA} reload={reload} setReload={setReload} statusFilter={statusFilter} images={[]}/>
             }
             
           </div>

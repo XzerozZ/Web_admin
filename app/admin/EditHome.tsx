@@ -32,63 +32,99 @@ interface NursingHouse {
 
 const EditHome: React.FC<state> = ({editId, setStateEA, reload, setReload, stateBanner, setStateBanner, setLastData}) => {
 
+
     const [numPic, setNumPic] = useState(0);
-    const [pictures, setPictures] = useState<string[]>([]);
+    const [pictures, setPictures] = useState<File[]>([]);
     const [showPictures, setShowPictures] = useState<any[]>([]);
-const [info, setInfo] = useState<NursingHouse>({
-    nh_id: 0,
-    name: '',
-    province: '',
-    address: '',
-    price: 0,
-    map: '',
-    phone_number: '',
-    site: '',
-    Date: '',
-    Status: '',
-});
-const [loading, setLoading] = useState(false)
+    const [pictureId, setPictureId] = useState<string[]>([]);
+    const [pictureDeleted, setPictureDeleted] = useState<string[]>([]);
+    const [info, setInfo] = useState<NursingHouse>({
+        nh_id: 0,
+        name: '',
+        province: '',
+        address: '',
+        price: 0,
+        map: '',
+        phone_number: '',
+        site: '',
+        Date: '',
+        Status: '',
+    });
+    const [oldPictureId, setOldPictureId] = useState<string[]>([]);
+    const [oldInfo, setOldInfo] = useState<NursingHouse>({
+        nh_id: 0,
+        name: '',
+        province: '',
+        address: '',
+        price: 0,
+        map: '',
+        phone_number: '',
+        site: '',
+        Date: '',
+        Status: '',
+    });
+    const [loading, setLoading] = useState(false)
+    const [hasChanged, setHasChanged] = useState<boolean>(false);
 
-const allInfoFilled = Object.values(info).every(value => {
-    // If it's a number (like price), check if it's non-zero
-    if (typeof value === 'number') {
-      return value !== 0;
+    useEffect(() => {
+        checkChanges();
+      }, [info, pictureId, pictures, pictureDeleted]);
+
+    const checkChanges = () => {
+    const infoChanged = Object.keys(info).some((key) => info[key as keyof NursingHouse] !== oldInfo[key as keyof NursingHouse]);
+    const picturesChanged = pictureId.length !== oldPictureId.length || pictureId.some((id, index) => id !== oldPictureId[index]);
+    const newPictures = pictures.length !== 0;
+    const pictureDeletedChanged = pictureDeleted.length !== 0;
+    const allInfoFilled = Object.values(info).every(value => {
+        // If it's a number (like price), check if it's non-zero
+        if (typeof value === 'number') {
+          return value > 0;
+        }
+        return value !== ''; // Check if the value is not an empty string
+      }) && numPic > 0;
+    
+    if (( infoChanged || picturesChanged || newPictures || pictureDeletedChanged ) && allInfoFilled) {
+        setHasChanged(true);
+    } else {
+        setHasChanged(false);
     }
-    return value !== ''; // Check if the value is not an empty string
-  }) && numPic > 0; // Ensure all pictures are filled
-  
+    };
+    
 
 
 
-// Handle image upload
-const handleUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-        setLoading(true);
-        setNumPic((prev) => prev + 1);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            const newPicture = [...pictures];
-            const newShowPicture = [...showPictures];
-            newPicture.push(file);
-            newShowPicture.push(reader.result);
-            setPictures(newPicture);
-            setShowPictures(newShowPicture);
-            setLoading(false);
-        };
-        reader.readAsDataURL(file);
-    }
-};
 
-const removePictureField = (index) => {
-    const updatedPictures = pictures.filter((_, i) => i !== index);
-    const updatedShowPictures = showPictures.filter((_, i) => i !== index);
-    setNumPic((prev) => prev - 1);
-    setPictures(updatedPictures);
-    setShowPictures(updatedShowPictures);
-};
+    const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setLoading(true);
+            setNumPic((prev) => prev + 1);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const newPicture = [...pictures];
+                const newShowPicture = [...showPictures];
+                newPicture.push(file);
+                newShowPicture.push(reader.result as string);
+                setPictures(newPicture);
+                setShowPictures(newShowPicture);
+                setLoading(false);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+
+    const removePictureField = ( index : number) => {
+        setPictureDeleted((prev) => [...prev, pictureId[index]]);
+        const updatedPictures = pictures.filter((_, i) => i !== index);
+        const updatedShowPictures = showPictures.filter((_, i) => i !== index);
+        setNumPic((prev) => prev - 1);
+        setPictures(updatedPictures);
+        setShowPictures(updatedShowPictures);
+    };
 
 useEffect(() => {
+    setLoading(true);
     if (editId) {
       const fetchData = async () => {
         const response = await fetch(`${Port.BASE_URL}/nursinghouses/${editId}`);
@@ -96,55 +132,98 @@ useEffect(() => {
           throw new Error('Network response was not ok');
         }
         const result = await response.json();
-        console.log(result);
-        setInfo(result.result);
-        // setPicture(result.result.picture
-        //     .split(',')
-        //     .map((pic: string) => pic.trim())
-        //     .filter((pic: string) => pic !== ''));
+        
+        setInfo({
+            nh_id: result.result.nh_id,
+            name: result.result.name,
+            province: result.result.province,
+            address: result.result.address,
+            price: result.result.price,
+            map: result.result.map,
+            phone_number: result.result.phone_number,
+            site: result.result.site,
+            Date: result.result.Date,
+            Status: result.result.Status,
+          });
+        setOldInfo({
+            nh_id: result.result.nh_id,
+            name: result.result.name,
+            province: result.result.province,
+            address: result.result.address,
+            price: result.result.price,
+            map: result.result.map,
+            phone_number: result.result.phone_number,
+            site: result.result.site,
+            Date: result.result.Date,
+            Status: result.result.Status,
+        });
+        const imageIDs = result.result.images.map((img: any) => img.image_id);
+        const imageLinks = result.result.images.map((img: any) => img.image_link);
+        setOldPictureId(imageIDs);
+        setPictureId(imageIDs);
+        setShowPictures(imageLinks);
+        setNumPic(imageLinks.length);
+        setLoading(false);
       };
   
       fetchData();
     }
   }, [editId]);
 
+console.log("---",showPictures);
+
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // ป้องกันการ reload หน้าเว็บ
     try {
-        const body = {
-            ...info,
-            picture: pictures.join(','),
-            };
-            console.log(body);
-            const response = await fetch(`${Port.BASE_URL}/nursinghouses/${editId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-            });
-            if (!response.ok) {
-                const errorData = await response.json(); // Try to parse error details
-                if (errorData.message && errorData.message.includes('uni_nursing_houses_name')) {
-                    console.log('--> Error: duplicate key value violates unique constraint "uni_nursing_houses_name" (SQLSTATE 23505)');
-                    setLastData({ error: 'uni_nursing_houses_name' }); // Save error info in state
-                    setStateBanner(true);
-                    throw new Error(errorData.message); // Re-throw error for logging
-                }else{
-                    setLastData({ error: 'something_went_wrong' }); // Save error info in state
-                    setStateBanner(true);
-                    throw new Error('Network response was not ok'); // Re-throw error for logging
-                }
-              }
-              const data = await response.json();
-              setLastData({data:data.result, massage:'EditHome_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
-              setReload(!reload);
-              setStateEA(false);
-              setStateBanner(true);
-            } catch (err) {
-                console.error(err);
+        const formData = new FormData();
+        formData.append('name', info.name);
+        formData.append('province', info.province);
+        formData.append('address', info.address);
+        formData.append('price', String(info.price));
+        formData.append('google_map', info.map);
+        formData.append('phone_number', info.phone_number);
+        formData.append('web_site', info.site);
+        formData.append('time', info.Date);
+        formData.append('status', info.Status);
+
+        pictures.forEach((picture) => {
+            formData.append('images', picture);
+        });
+        // pictureDeleted.forEach((id) => {
+        //     formData.append('delete_images', id);
+        // });
+        if (pictureDeleted.length > 0) {
+            const deleteIds = pictureDeleted.join(','); // Join IDs with commas
+            formData.append('delete_images', deleteIds); // Append as a single string
+          }
+        const response = await fetch(`${Port.BASE_URL}/nursinghouses/${editId}`, {
+        method: 'PUT',
+        body: formData,
+        });
+        console.log('response', response);
+        if (!response.ok) {
+            const errorData = await response.json(); // Try to parse error details
+            if (errorData.message && errorData.message.includes('uni_nursing_houses_name')) {
+                console.log('--> Error: duplicate key value violates unique constraint "uni_nursing_houses_name" (SQLSTATE 23505)');
+                setLastData({ error: 'uni_nursing_houses_name' }); // Save error info in state
+                setStateBanner(true);
+                throw new Error(errorData.message); // Re-throw error for logging
+            }else{
+                setLastData({ error: 'something_went_wrong' }); // Save error info in state
+                setStateBanner(true);
+                throw new Error('Network response was not ok'); // Re-throw error for logging
             }
+            }
+        const data = await response.json();
+        console.log('Success:', data);
+        setLastData({data:editId, massage:'EditHome_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
+        setReload(!reload);
+        setStateEA(false);
+        setStateBanner(true);
+        } catch (err) {
+            console.error(err);
+        }
     
   };
 
@@ -349,8 +428,8 @@ return (
                     </div>
                 </div>
                 <button 
-                type={allInfoFilled?'submit':'button'}
-                 className={allInfoFilled?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
+                type={hasChanged?'submit':'button'}
+                 className={hasChanged?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
                 :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white cursor-pointer'} >
                     ยืนยันแก้ไข
                 </button>

@@ -14,6 +14,7 @@ interface CardProps {
     reload: boolean
     setReload: (state: boolean) => void
     statusFilter: string
+    images?: { image_link: string }[];
 }
 interface NursingHouse {
   nh_id: number;
@@ -27,6 +28,23 @@ interface NursingHouse {
   Status: string;
   CreatedAt: string;
   UpdatedAt: string;
+  images?: { image_link: string }[];
+
+  news_id: number;
+  title: string;
+  description: string;
+  content: string;
+}
+
+interface Article {
+  news_id: number;
+  title: string;
+  description: string;
+  content: string;
+  Status: string;
+  CreatedAt: string;
+  UpdatedAt: string;
+  images?: { image_link: string }[];
 }
 
 
@@ -37,7 +55,7 @@ const [articleIds, setArticleIds] = useState<NursingHouse[]>([]);
 
 const dataNoSearch = stateManu ? homeIds : articleIds;
 const [data, setData] = useState<NursingHouse[]>([])
-const [loading, setLoading] = useState(true); // สถานะโหลดข้อมูล
+const [loading, setLoading] = useState(true); 
 
 useEffect(() => {
   if (stateManu){
@@ -108,7 +126,7 @@ useEffect(() => {
   }else{
     const fetchData = async () => {
       try {
-        const response = await fetch(`${Port.BASE_URL}/nursinghouses`) // Article API
+        const response = await fetch(`${Port.BASE_URL}/news`) // Article API
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -142,20 +160,25 @@ console.log('+++',data)
         <div 
           key={index} 
           onClick={() => {
-            setEditId(item.nh_id)
+            setEditId(stateManu?item.nh_id:item.news_id)
             setStateEA(true)
           }}
-          className={item.Status == 'Active'? 'w-60 bg-white rounded-lg shadow border-[1px] border-accent cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative' 
-          : 'w-60 bg-white rounded-lg shadow border-[1px] border-x-unselectMenu cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative'}>
+          className={stateManu?(item.Status == 'Active'? 'w-60 bg-white rounded-lg shadow border-[1px] border-accent cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative' 
+          : 'w-60 bg-white rounded-lg shadow border-[1px] border-x-unselectMenu cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative'
+          ):'w-60 bg-white rounded-lg shadow border-[1px] border-accent cursor-pointer hover:shadow-lg hover:scale-105 duration-200 flex flex-col relative'}>
           <div className='mx-auto w-56 bg-gray-200 mt-2 h-40 rounded-md shrink-0'>
-              
+            <img src={item.images[0]?.image_link}
+            className='w-56 h-40 rounded-md object-cover'/>
           </div>
           <div className='mx-auto h-12 w-56 my-2 break-words line-clamp-2'>
-              {item.name}
+              {stateManu?item.name:item.title}
+              
           </div>
-          <div className={item.Status == 'Active'?' text-white text-sm absolute top-0 left-0 w-20 h-6 bg-accent flex items-center justify-center rounded-tl-md rounded-br-lg opacity-80'
-          :' text-white text-sm absolute top-0 left-0 w-20 h-6 bg-unselectMenu flex items-center justify-center rounded-tl-md rounded-br-lg opacity-80'}>
-            {item.nh_id}
+          <div className={stateManu?(item.Status == 'Active'?' text-white text-sm absolute top-0 left-0 w-20 h-6 bg-accent flex items-center justify-center rounded-tl-md rounded-br-lg opacity-95'
+          :' text-white text-sm absolute top-0 left-0 w-20 h-6 bg-unselectMenu flex items-center justify-center rounded-tl-md rounded-br-lg opacity-95')
+          :' text-white text-sm absolute top-0 left-0 w-20 h-6 bg-accent flex items-center justify-center rounded-tl-md rounded-br-lg opacity-95'}>
+            {stateManu?item.nh_id:item.news_id}
+
           </div> 
           <div className='mt-1 text-accent text-sm pr-2 absolute top-1 right-0'>
             <Icon icon="mage:edit" width="20" height="20" />

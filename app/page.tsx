@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { FormEvent } from 'react';
 import Image from 'next/image';
 import logo from '../public/asset/logo.png';
 import { Icon } from '@iconify-icon/react';
@@ -9,19 +10,28 @@ import Link from 'next/link';
 import Port from './Port';
 import Banner from './Components/Banner';
 
+
+interface LastData {
+  error?: string; // หรือคุณอาจจะใช้ `null` แทน `undefined` ก็ได้
+  data?: any; // ใช้ประเภทที่เหมาะสมตามที่ต้องการ
+  message?: string;
+}
+
+
+
 export default function Home() {
 
 const [email, setEmail] = useState('');
 const [password, setPassword] = useState('');
 
-const [lastData, setLastData] = useState([]);
+const [lastData, setLastData] = useState<LastData>({});
 const [stateBanner, setStateBanner] = useState(false)
 
 
-const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+const handleLogin = async (e: React.MouseEvent<HTMLDivElement>) => {
   e.preventDefault();
   try {
-    const response = await fetch(`${Port.BASE_URL}/login`, {
+    const response = await fetch(`${Port.BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -102,7 +112,7 @@ useEffect(() => {
             className="w-full max-w-96 px-2 pl-10 rounded-md h-10 text shadow-md outline-none text-normalText"/>
           </div>
           <div 
-            onClick={email && password ? handleLogin : null }
+            onClick={email && password ? (e: React.MouseEvent<HTMLDivElement>) => handleLogin(e) : undefined }
             className={email && password 
               ? "w-full max-w-96 h-12 bg-primary text-neutral rounded-md text shadow-md hover:opacity-90 active:scale-95 duration-100 flex justify-center items-center cursor-pointer"
               : "w-full max-w-96 h-12 bg-label text-neutral rounded-md text shadow-md flex justify-center items-center"}>

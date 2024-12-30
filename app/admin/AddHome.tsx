@@ -27,11 +27,13 @@ type InfoType = {
     Date: string;
 };
 
+
+
 const AddHome: React.FC<state> = ({editId, setStateEA, reload, setReload, stateBanner, setStateBanner, setLastData}) => {
 
 const [HomeId, setHomeId] = useState<number>(0);
 const [numPic, setNumPic] = useState(0);
-const [pictures, setPictures] = useState<string[]>([]);
+const [pictures, setPictures] = useState<File[]>([]);
 const [showPictures, setShowPictures] = useState<any[]>([]);
 const [info, setInfo] = useState<InfoType>({
     name: '',
@@ -48,7 +50,7 @@ const [loading, setLoading] = useState(false)
 const allInfoFilled = Object.values(info).every(value => {
     // If it's a number (like price), check if it's non-zero
     if (typeof value === 'number') {
-      return value !== 0;
+      return value > 0;
     }
     return value !== ''; // Check if the value is not an empty string
   }) && numPic > 0; // Ensure all pictures are filled
@@ -57,8 +59,8 @@ const allInfoFilled = Object.values(info).every(value => {
 
 
 // Handle image upload
-const handleUpload = (e) => {
-    const file = e.target.files[0];
+const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
         setLoading(true);
         setNumPic((prev) => prev + 1);
@@ -76,7 +78,7 @@ const handleUpload = (e) => {
     }
 };
 
-const removePictureField = (index) => {
+const removePictureField = (index: number) => {
     const updatedPictures = pictures.filter((_, i) => i !== index);
     const updatedShowPictures = showPictures.filter((_, i) => i !== index);
     setNumPic((prev) => prev - 1);
@@ -115,27 +117,28 @@ console.log(numPic,'pictures-',pictures, '++',showPictures)
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // ป้องกันการ reload หน้าเว็บ
     try {
+
+        const formData = new FormData();
+        formData.append('name', info.name);
+        formData.append('province', info.province);
+        formData.append('address', info.address);
+        formData.append('price', String(info.price));
+        formData.append('google_map', info.map);
+        formData.append('phone_number', info.phone_number);
+        formData.append('web_site', info.site);
+        formData.append('time', info.Date);
+
+        pictures.forEach((picture) => {
+            formData.append('images', picture);
+        });
       const response = await fetch(`${Port.BASE_URL}/nursinghouses`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // ประเภทข้อมูล
-        },
-        body: JSON.stringify({
-            "name": info.name,
-            "province": info.province,
-            "address": info.address,
-            "price": info.price,
-            "map": info.map,
-            "phone_number": info.phone_number,
-            "site": info.site,
-            "Date": info.Date,
-        }), // แปลงข้อมูลเป็น JSON
+        body: formData,
       });
 
       if (!response.ok) {
         const errorData = await response.json(); // Try to parse error details
         if (errorData.message && errorData.message.includes('uni_nursing_houses_name')) {
-            console.log('--> Error: duplicate key value violates unique constraint "uni_nursing_houses_name" (SQLSTATE 23505)');
             setLastData({ error: 'uni_nursing_houses_name' }); // Save error info in state
             setStateBanner(true);
             throw new Error(errorData.message); // Re-throw error for logging
@@ -153,6 +156,7 @@ console.log(numPic,'pictures-',pictures, '++',showPictures)
       setStateBanner(true);
       setLastData({data:data.result, massage:'Addhome_success'}); // ส่งข้อมูลล่าสุดไปยัง Banner
     } catch (error) {
+        console.log('Error:', error);
       throw new Error( error as string);
     }
   };
