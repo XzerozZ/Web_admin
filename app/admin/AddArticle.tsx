@@ -283,7 +283,7 @@ return (
                 <div className='w-full flex justify-center'>
 
                     <div className='w-2/5'>
-                        <div className='w-[320px] h-[600px] z-20 bg-neutral pb-5 bg-netural rounded-3xl my-3 mx-auto sticky top-10 shadow-lg border-4 border-normalText overflow-y-auto slidenon'>
+                        <div className='w-[320px] h-[650px] z-20 bg-neutral pb-5 bg-netural rounded-3xl my-3 mx-auto sticky top-10 shadow-lg border-4 border-normalText overflow-y-auto slidenon'>
                             <div className='w-[313px] h-[180px] bg-gray-200'>
                                 {showTitlePicture === undefined ?
                                     <>
