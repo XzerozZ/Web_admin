@@ -136,7 +136,7 @@ const getFontSize = (size: 'Heading' | 'Paragraph' | 'Small'): string => {
         if (descriptionPicture) {
             formData.append('image_desc', descriptionPicture as Blob);
         }else{
-            formData.append('image_desc', 'del_image');
+            formData.append('image_desc', 'del_img');
         }
         
         formData.forEach((value, key) => {
