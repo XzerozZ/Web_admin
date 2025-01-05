@@ -75,14 +75,17 @@ useEffect(() => {
           ?<div className='w-full h-12 flex items-center pl-5'>
             <div className='h-12 flex items-center gap-5'>
                 <div 
+                id="filter-all"
                 onClick={() => setStatusFilter('All')}
                 className={statusFilter == 'All'?' cursor-pointer text-normalText':' cursor-pointer text-unselectMenu'}>All</div>
                 <div className='w-[1px] h-8 bg-unselectInput'></div>
                 <div
+                id="filter-active"
                 onClick={() => setStatusFilter('Active')}
                 className={statusFilter == 'Active'?' cursor-pointer text-normalText':' cursor-pointer text-unselectMenu'}>Active</div>
                 <div className='w-[1px] h-8 bg-unselectInput'></div>
                 <div
+                id="filter-inactive"
                 onClick={() => setStatusFilter('Inactive')}
                 className={statusFilter == 'Inactive'?' cursor-pointer text-normalText':' cursor-pointer text-unselectMenu'}>Inactive</div>
 
@@ -103,7 +106,7 @@ useEffect(() => {
                   :<EditArticle editId={editId} setStateEA={setStateEA} reload={reload} setReload={setReload} stateBanner={stateBanner} setStateBanner={setStateBanner} setLastData={setLastData}/>)
               )
               :
-              <Card stateManu={stateManu} search={search} setEditId={setEditId} setStateEA={setStateEA} reload={reload} setReload={setReload} statusFilter={statusFilter} images={[]}/>
+              <Card stateManu={stateManu} search={search} setEditId={setEditId} setStateEA={setStateEA} reload={reload} statusFilter={statusFilter} images={[]}/>
             }
             
           </div>

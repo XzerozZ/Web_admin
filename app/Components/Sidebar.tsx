@@ -43,12 +43,14 @@ const handleLogout = async () => {
                                 <Image
                                     src={logo}
                                     alt="Logo"
+                                    id="sidebar_logo"
                                     className='object-contain min-w-28'
                                 />
                             </div> 
-                            <div className='text-label mt-5 pl-5'>จัดการข้อมูลหลัก</div>
+                            <div id="sidebar_title" className='text-label mt-5 pl-5'>จัดการข้อมูลหลัก</div>
                             <div className='w-full flex flex-col gap-10 mt-5 z-10 relative'>
                                 <div 
+                                id="sidebar-tab-1"
                                 onClick={() => {
                                     setStateManu(true);
                                     setStateEA(false);
@@ -62,7 +64,8 @@ const handleLogout = async () => {
                                 </div>
                             </div>
                             <div className='w-full flex flex-col gap-10 z-10 relative'>
-                                <div 
+                                <div
+                                id="sidebar-tab-2" 
                                 onClick={() => {
                                     setStateManu(false);
                                     setStateEA(false);

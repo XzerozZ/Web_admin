@@ -238,7 +238,7 @@ return (
                 <Icon
                 onClick={() => setStateEA(false)}
                 className=' cursor-pointer text-normalText' icon="ion:chevron-back" width="40" height="40" />
-                <div className='text-xl font-bold text-normalText'>Home ID : {editId}</div>
+                <div id="home_id" className='text-xl font-bold text-normalText'>Home ID : {editId}</div>
             </div>
             <div className='w-full h-auto border-2 border-accent rounded-lg mt-5 py-10 p-2 relative flex flex-wrap justify-center gap-5'>
             <div className='text-xl bg-neutral absolute px-3 left-10 top-[-15px] text-accent'>รูปภาพบ้านพัก</div>

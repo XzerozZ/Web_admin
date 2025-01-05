@@ -12,7 +12,6 @@ interface CardProps {
     setEditId: (id: number | null) => void
     setStateEA: (state: boolean) => void
     reload: boolean
-    setReload: (state: boolean) => void
     statusFilter: string
     images?: { image_link: string }[];
 }
@@ -38,19 +37,7 @@ interface NursingHouse {
   image_desc: string;
 }
 
-interface Article {
-  news_id: number;
-  title: string;
-  description: string;
-  content: string;
-  Status: string;
-  CreatedAt: string;
-  UpdatedAt: string;
-  images?: { image_link: string }[];
-}
-
-
-const Card: React.FC<CardProps> = ({stateManu, search, setEditId, setStateEA, reload, setReload, statusFilter}) => {
+const Card: React.FC<CardProps> = ({stateManu, search, setEditId, setStateEA, reload, statusFilter}) => {
 
 const [homeIds, setHomeIds] = useState<NursingHouse[]>([]);
 const [articleIds, setArticleIds] = useState<NursingHouse[]>([]);
@@ -170,7 +157,8 @@ useEffect(() => {
       />
       </div>
     :(data.map((item, index) => (
-        <div 
+        <div
+          id = "card" 
           key={index} 
           onClick={() => {
             setEditId(stateManu?item.nh_id:item.news_id)
