@@ -112,6 +112,7 @@ useEffect(() => {
             className="w-full max-w-96 px-2 pl-10 rounded-md h-10 text shadow-md outline-none text-normalText"/>
           </div>
           <div 
+            id="login_button"
             onClick={email && password ? (e: React.MouseEvent<HTMLDivElement>) => handleLogin(e) : undefined }
             className={email && password 
               ? "w-full max-w-96 h-12 bg-primary text-neutral rounded-md text shadow-md hover:opacity-90 active:scale-95 duration-100 flex justify-center items-center cursor-pointer"
