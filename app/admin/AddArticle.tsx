@@ -234,7 +234,7 @@ return (
                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                         </label>
                         <input
-                            id='upload-input'
+                            id='upload-input-title'
                             type='file'
                             accept='image/*'
                             style={{ display: 'none' }}
@@ -244,6 +244,7 @@ return (
                     : <>
                         <div className='w-96 h-60 rounded-lg relative'>
                             <img
+                                id="title-pic"
                                 src={showTitlePicture ? showTitlePicture[0] : undefined}
                                 alt='Picture'
                                 className='object-cover rounded-lg w-full h-full'
@@ -276,6 +277,7 @@ return (
             <div className=' w-full border-2 border-accent rounded-lg mt-10 p-2 pb-8 relative flex flex-col items-end'>
                 <div className='text-xl bg-neutral absolute px-3 left-10 top-[-15px] text-accent'>คำอธิบาย</div>
                 <div 
+                id="add-dialog"
                 onClick={addTextArea}
                 className='w-40 h-10 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95 sticky top-5 mt-3 mr-3 z-10'>
                     เพิ่มกล่องข้อความ
@@ -292,7 +294,6 @@ return (
                                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                                         </label>
                                         <input
-                                            id='upload-input'
                                             type='file'
                                             accept='image/*'
                                             style={{ display: 'none' }}
@@ -362,7 +363,7 @@ return (
                                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                                         </label>
                                         <input
-                                            id='upload-input'
+                                            id='upload-input-desc'
                                             type='file'
                                             accept='image/*'
                                             style={{ display: 'none' }}
@@ -372,6 +373,7 @@ return (
                                     : <>
                                         <div className='w-96 h-60 rounded-lg relative'>
                                             <img
+                                                id="desc-pic"
                                                 src={showDescriptionPicture ? showDescriptionPicture[0] : undefined}
                                                 alt='Picture'
                                                 className='object-cover rounded-lg w-full h-full'
@@ -443,6 +445,7 @@ return (
                 ลบบทความ
             </div> */}
             <button 
+            id="add_article"
             type={hasChanged?'submit':'button'}
             className={hasChanged?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
             :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white cursor-pointer'} >
