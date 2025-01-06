@@ -26,6 +26,7 @@ const handleLogout = async () => {
         });
         localStorage.removeItem('token');
         localStorage.removeItem('username');
+        setToken('');
         window.location.href = '/';
     } catch (error) {
         console.error('Logout failed:', error);
