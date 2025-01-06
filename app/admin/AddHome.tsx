@@ -328,6 +328,7 @@ return (
             {/* ------------------------------------------------------------------------------- */}
             <div className='w-full flex justify-end mt-5'>
                 <button 
+                id="add_house"
                 type={allInfoFilled?'submit':'button'}
                  className={allInfoFilled?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
                 :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white cursor-pointer'} >

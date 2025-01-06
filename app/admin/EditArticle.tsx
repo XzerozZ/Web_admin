@@ -315,7 +315,7 @@ return (
                 <Icon
                 onClick={() => setStateEA(false)}
                 className=' cursor-pointer text-normalText' icon="ion:chevron-back" width="40" height="40" />
-                <div className='text-xl font-bold text-normalText'>Article Id : {editId}</div>
+                <div id="article_id" className='text-xl font-bold text-normalText'>Article Id : {editId}</div>
             </div>
             <div className=' w-full border-2 border-accent rounded-lg mt-5 pl-5 p-2 pb-8 relative'>
                 <div className='text-xl bg-neutral absolute px-3 left-10 top-[-15px] text-accent'>หัวข้อและหน้าปกบทความ</div>
