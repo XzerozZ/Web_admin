@@ -256,6 +256,7 @@ return (
                             <>
                                 <img
                                     src={pic}
+                                    id='picture'
                                     alt='Picture'
                                     className='object-cover rounded-lg'
                                     width={320}
@@ -263,6 +264,7 @@ return (
                                     style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
                                 />
                                 <div
+                                    id="remove_img"
                                     className='absolute top-1 right-1 w-10 h-10 flex justify-center items-center text-unselectMenu hover:text-err shrink-0 cursor-pointer active:scale-95'
                                     onClick={() => removePictureField(index)}
                                 >
@@ -298,7 +300,7 @@ return (
                         <Icon className='text-primary' icon="ic:round-home" width="40" height="40" />
                         <div className=' text-label'>ชื่อ</div>
                     </div>
-                    <div className='w-full px-3 flex justify-center items-center'>
+                    <div id="name" className='w-full px-3 flex justify-center items-center'>
                         <input 
                         value={info.name}
                         onChange={(e) => setInfo({...info, name: e.target.value})}
@@ -409,7 +411,7 @@ return (
                 <div className='w-40 h-12 flex items-center justify-center text-lg font-bold gap-3'>
                     Active
                     <div className="checkbox-wrapper-22">
-                    <label className="switch">
+                    <label id="switch" className="switch">
                         <input 
                         checked={info.Status == "Active"?true:false} 
                         onChange={handleToggle}
@@ -420,6 +422,7 @@ return (
                     </div>
                 </div>
                 <button 
+                id="edit_house"
                 type={hasChanged?'submit':'button'}
                  className={hasChanged?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
                 :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white cursor-pointer'} >
