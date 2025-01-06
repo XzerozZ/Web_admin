@@ -46,8 +46,10 @@ useEffect(() => {
     setLastData({ message: 'Login_success' });
     setStateBanner(true);
     localStorage.removeItem('login');
-  }else if(token == ''){
+  }else if(tokenS == undefined){
     window.location.href = '/';
+  }else{
+    setToken(tokenS as string);
   }
   
 }, []);
