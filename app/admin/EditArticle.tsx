@@ -327,7 +327,7 @@ return (
                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                         </label>
                         <input
-                            id='upload-input'
+                            id='upload-input-title'
                             type='file'
                             accept='image/*'
                             style={{ display: 'none' }}
@@ -337,12 +337,14 @@ return (
                     : <>
                         <div className='w-96 h-60 rounded-lg relative'>
                             <img
+                                id="title-pic"
                                 src={showTitlePicture ? showTitlePicture : undefined}
                                 alt='Picture'
                                 className='object-cover rounded-lg w-full h-full'
                                 style={{ objectFit: 'cover', borderRadius: '0.5rem' }}
                             />
                             <div
+                            id='remove-title-pic'
                             className='absolute top-1 right-1 w-10 h-10 flex justify-center items-center text-unselectMenu hover:text-err shrink-0 cursor-pointer active:scale-95'
                             onClick={removePictureFieldtitle}
                             >
@@ -457,7 +459,7 @@ return (
                                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                                         </label>
                                         <input
-                                            id='upload-input'
+                                            id='upload-input-desc'
                                             type='file'
                                             accept='image/*'
                                             style={{ display: 'none' }}
@@ -467,12 +469,14 @@ return (
                                     : <>
                                         <div className='w-96 h-auto rounded-lg relative'>
                                             <img
+                                                id="desc-pic"
                                                 src={showDescriptionPicture ? showDescriptionPicture : undefined}
                                                 alt='Picture'
                                                 className='object-cover rounded-lg w-full h-full'
                                                 style={{ objectFit: 'contain', borderRadius: '0.5rem' }}
                                             />
                                             <div
+                                            id='remove-desc-pic'
                                             className='absolute top-1 right-1 w-10 h-10 flex justify-center items-center text-unselectMenu hover:text-err shrink-0 cursor-pointer active:scale-95'
                                             onClick={removePictureFielddescription}
                                             >
@@ -535,11 +539,13 @@ return (
             </div> 
             <div className='w-full flex justify-end mt-5 gap-5'>
             <div 
+            id="delete-article"
             onClick={handleDeleteArticle}
             className='w-40 h-12 bg-err rounded-lg flex items-center justify-center text-white cursor-pointer' >
                 ลบบทความ
             </div>
             <button 
+            id="edit-article"
             type={hasChanged?'submit':'button'}
             className={hasChanged?'w-40 h-12 bg-primary rounded-lg flex items-center justify-center text-white cursor-pointer duration-100 active:scale-95'
             :'w-40 h-12 bg-unselectMenu rounded-lg flex items-center justify-center text-white'} >
