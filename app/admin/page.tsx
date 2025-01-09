@@ -1,5 +1,5 @@
 'use client'
-
+import type { Metadata } from "next";
 import React, { use } from 'react';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
@@ -14,7 +14,6 @@ import EditHome from './EditHome';
 import AddArticle from './AddArticle';
 import EditArticle from './EditArticle';
 
-
 export default function Home() {
 
 
@@ -25,6 +24,7 @@ const [search, setSearch] = useState('')
 
 const [editId, setEditId] = useState<number | null>(null)
 const [stateEA, setStateEA] = useState(false)
+
 
 
 const [lastData, setLastData] = useState<{ message: string } | []>([]); // ข้อมูลที่ดึงมาจาก API
@@ -61,6 +61,7 @@ useEffect(() => {
   }, 4000)
   :null
 })
+
 
 
 
