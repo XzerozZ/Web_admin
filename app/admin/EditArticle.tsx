@@ -327,7 +327,7 @@ return (
                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                         </label>
                         <input
-                            id='upload-input'
+                            id='upload-input upload-input-title'
                             type='file'
                             accept='image/*'
                             style={{ display: 'none' }}
@@ -459,7 +459,7 @@ return (
                                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                                         </label>
                                         <input
-                                            id='upload-input'
+                                            id='upload-input upload-input-desc'
                                             type='file'
                                             accept='image/*'
                                             style={{ display: 'none' }}
