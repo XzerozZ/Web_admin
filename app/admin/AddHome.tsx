@@ -205,7 +205,9 @@ return (
 
             {numPic < 5 && (
                 <div className='w-80 h-52 shrink-0 overflow-hidden flex justify-center items-center text-primary relative'>
-                    <label htmlFor='upload-input' className='cursor-pointer w-full h-full bg-gray-100 rounded-lg flex justify-center items-center'>
+                    <label 
+                    htmlFor='upload-input' 
+                    className='cursor-pointer w-full h-full bg-gray-100 rounded-lg flex justify-center items-center'>
                         <Icon icon='ic:round-plus' width='40' height='40' />
                     </label>
                     <input

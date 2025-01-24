@@ -229,12 +229,13 @@ return (
                 <div className='w-96 h-60 ml-3 bg-unselectInput mt-5 rounded-lg flex justify-center items-center active:bg-gray-300 duration-100'>
                     {showTitlePicture === undefined ?
                     <>
-                        <label htmlFor='upload-input' 
+                        <label 
+                        htmlFor='upload-input' 
                         className='cursor-pointer w-full h-full bg-gray-100 rounded-lg flex justify-center items-center'>
                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                         </label>
                         <input
-                            id='upload-input-title'
+                            id='upload-input'
                             type='file'
                             accept='image/*'
                             style={{ display: 'none' }}
@@ -363,7 +364,7 @@ return (
                                         <Icon className='text-gray-400' icon="material-symbols:upload-rounded" width="50" height="50" />
                                         </label>
                                         <input
-                                            id='upload-input-desc'
+                                            id='upload-input'
                                             type='file'
                                             accept='image/*'
                                             style={{ display: 'none' }}
