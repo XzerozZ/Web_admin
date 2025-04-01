@@ -1,5 +1,5 @@
 const Port = {
-    BASE_URL: 'http://localhost:5000',
+    BASE_URL: 'http://89.116.122.89:5000',
   };
   
   export default Port;
